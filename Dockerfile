@@ -14,8 +14,8 @@ RUN set -e \
     && rm -rf /var/cache/apk/*
 
 COPY bashrc /root/.bashrc
-COPY init.sh /docker-entrypoint.d/40-init-config.sh
 COPY release/lina /opt/lina
 COPY release/luna /opt/luna
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY http_server.conf /etc/nginx/conf.d/default.conf
+COPY init.sh /docker-entrypoint.d/40-init-config.sh
