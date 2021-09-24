@@ -5,6 +5,7 @@ RUN set -e \
     && apk update \
     && apk add --no-cache bash iproute2 busybox-extras \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && sed -i 's@/bin/ash@/bin/bash@g' /etc/passwd \
     && mkdir -p /opt/download \
     && cd /opt/download \
     && wget https://download.jumpserver.org/public/JumpServer-Client-Installer.dmg \
@@ -12,6 +13,8 @@ RUN set -e \
     && wget https://download.jumpserver.org/public/Microsoft_Remote_Desktop_10.6.7_installer.pkg \
     && rm -rf /var/cache/apk/*
 
+COPY bashrc /root/.bashrc
+COPY init.sh /docker-entrypoint.d/40-init-config.sh
 COPY release/lina /opt/lina
 COPY release/luna /opt/luna
 COPY nginx.conf /etc/nginx/nginx.conf
