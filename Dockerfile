@@ -6,7 +6,7 @@ RUN set -e \
     && apk add --no-cache bash iproute2 busybox-extras \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && sed -i 's@/bin/ash@/bin/bash@g' /etc/passwd \
-    && mkdir -p /opt/download \
+    && mkdir -p /opt/download /etc/nginx/sites-enabled \
     && cd /opt/download \
     && wget https://download.jumpserver.org/public/JumpServer-Client-Installer.dmg \
     && wget https://download.jumpserver.org/public/JumpServer-Client-Installer.msi \
