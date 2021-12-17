@@ -8,7 +8,7 @@ RUN set -e \
     && sed -i 's@/bin/ash@/bin/bash@g' /etc/passwd \
     && mkdir -p /opt/download /etc/nginx/sites-enabled \
     && cd /opt/download \
-    && wget https://download.jumpserver.org/public/Jmservisor-v1.1.0.msi \
+    && wget https://download.jumpserver.org/public/JumpServer-Jmservisor.msi \
     && wget https://download.jumpserver.org/public/JumpServer-Client-Installer.dmg \
     && wget https://download.jumpserver.org/public/JumpServer-Client-Installer.msi \
     && wget https://download.jumpserver.org/public/Microsoft_Remote_Desktop_10.6.7_installer.pkg \
