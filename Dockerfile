@@ -1,6 +1,6 @@
 FROM nginx:stable
 
-ARG Jmservisor_VERSION=v1.2.2
+ARG Jmservisor_VERSION=v1.2.3
 ARG Client_VERSION=v1.1.3
 ARG MRD_VERSION=10.6.7
 
