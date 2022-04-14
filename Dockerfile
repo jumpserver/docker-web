@@ -10,12 +10,15 @@ RUN set -e \
     && apt update \
     && apt-get install -y iproute2 wget vim \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && mkdir -p /opt/download /etc/nginx/sites-enabled \
+    && mkdir -p /opt/download/putty/w64 /opt/download/putty/wa64 /opt/download/putty/w32  /etc/nginx/sites-enabled \
     && cd /opt/download \
     && wget -qO /opt/download/Jmservisor.msi https://download.jumpserver.org/public/Jmservisor-${Jmservisor_VERSION}.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer.dmg https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.dmg \
     && wget https://download.jumpserver.org/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg \
+    && wget -qO /opt/download/putty/w64/putty.exe https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe \
+    && wget -qO /opt/download/putty/wa64/putty.exe https://the.earth.li/~sgtatham/putty/latest/wa64/putty.exe \
+    && wget -qO /opt/download/putty/w32/putty.exe https://the.earth.li/~sgtatham/putty/latest/w32/putty.exe \
     && rm -rf /var/log/nginx/*.log \
     && rm -rf /var/lib/apt/lists/*
 
