@@ -1,7 +1,7 @@
 FROM nginx:stable
 
 ARG Jmservisor_VERSION=v1.2.3
-ARG Client_VERSION=v1.1.3
+ARG Client_VERSION=v1.1.4
 ARG MRD_VERSION=10.6.7
 
 RUN set -e \
@@ -10,9 +10,9 @@ RUN set -e \
     && apt update \
     && apt-get install -y iproute2 wget vim \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && mkdir -p /opt/download/putty/w64 /opt/download/putty/wa64 /opt/download/putty/w32  /etc/nginx/sites-enabled \
+    && mkdir -p /opt/download /etc/nginx/sites-enabled \
     && cd /opt/download \
-    && wget https://download.jumpserver.org/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg \
+    && wget -q https://download.jumpserver.org/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg \
     && wget -qO /opt/download/Jmservisor.msi https://download.jumpserver.org/public/Jmservisor-${Jmservisor_VERSION}.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer-x86_64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-x86_64.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer-arm64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.msi \
