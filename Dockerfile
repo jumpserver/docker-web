@@ -14,11 +14,9 @@ RUN set -e \
     && cd /opt/download \
     && wget https://download.jumpserver.org/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg \
     && wget -qO /opt/download/Jmservisor.msi https://download.jumpserver.org/public/Jmservisor-${Jmservisor_VERSION}.msi \
-    && wget -qO /opt/download/JumpServer-Client-Installer.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.msi \
+    && wget -qO /opt/download/JumpServer-Client-Installer-x86_64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-x86_64.msi \
+    && wget -qO /opt/download/JumpServer-Client-Installer-arm64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer.dmg https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.dmg \
-    && wget -qO /opt/download/putty/w64/putty.exe https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe \
-    && wget -qO /opt/download/putty/wa64/putty.exe https://the.earth.li/~sgtatham/putty/latest/wa64/putty.exe \
-    && wget -qO /opt/download/putty/w32/putty.exe https://the.earth.li/~sgtatham/putty/latest/w32/putty.exe \
     && rm -rf /var/log/nginx/*.log \
     && rm -rf /var/lib/apt/lists/*
 
