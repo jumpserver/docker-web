@@ -1,7 +1,7 @@
 FROM nginx:stable
 
 ARG Jmservisor_VERSION=v1.2.3
-ARG Client_VERSION=v1.1.5
+ARG Client_VERSION=v1.1.6
 ARG MRD_VERSION=10.6.7
 
 RUN set -e \
@@ -15,8 +15,8 @@ RUN set -e \
     && wget -q https://download.jumpserver.org/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg \
     && wget -qO /opt/download/Jmservisor.msi https://download.jumpserver.org/public/Jmservisor-${Jmservisor_VERSION}.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer-x86_64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-x86_64.msi \
-    && wget -qO /opt/download/JumpServer-Client-Installer-arm64.msi https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.msi \
     && wget -qO /opt/download/JumpServer-Client-Installer.dmg https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.dmg \
+    && wget -qO /opt/download/JumpServer-Client-Installer.run https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}.run \
     && rm -rf /var/log/nginx/*.log \
     && rm -rf /var/lib/apt/lists/*
 
