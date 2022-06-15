@@ -1,7 +1,7 @@
 FROM nginx:stable
 
 ARG Jmservisor_VERSION=v1.2.3
-ARG Client_VERSION=v1.1.5
+ARG Client_VERSION=v1.1.6
 ARG MRD_VERSION=10.6.7
 
 RUN set -e \
