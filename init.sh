@@ -14,11 +14,11 @@ if [ -n "${SERVER_NAME}" ]; then
   sed -i "s@# server_name .*;@server_name ${SERVER_NAME};@g" /etc/nginx/conf.d/default.conf
 fi
 
-if [ -n "${SSL_CERTIFICATE}" ]; then
+if [ -n "${SSL_CERTIFICATE}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE}" ]; then
   sed -i "s@ssl_certificate .*;@ssl_certificate cert/${SSL_CERTIFICATE};@g" /etc/nginx/conf.d/default.conf
 fi
 
-if [ -n "${SSL_CERTIFICATE_KEY}" ]; then
+if [ -n "${SSL_CERTIFICATE_KEY}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE_KEY}" ]; then
   sed -i "s@ssl_certificate_key .*;@ssl_certificate_key cert/${SSL_CERTIFICATE_KEY};@g" /etc/nginx/conf.d/default.conf
 fi
 
