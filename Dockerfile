@@ -1,4 +1,4 @@
-FROM nginx:stable
+FROM nginx:1.22
 
 ARG Jmservisor_VERSION=v1.2.3
 ARG Client_VERSION=v1.1.6
