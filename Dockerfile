@@ -8,8 +8,8 @@ ARG VIDEO_PLAYER_VERSION=0.1.5
 RUN set -e \
     && sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list \
     && sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list \
-    && apt update \
-    && apt-get install -y iproute2 wget vim \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends iproute2 wget vim logrotate \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && mkdir -p /opt/download /etc/nginx/sites-enabled \
     && cd /opt/download \
@@ -21,7 +21,7 @@ RUN set -e \
     && wget -qO /opt/download/JumpServer-Client-Installer-arm64.run https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.run \
     && wget -qO /opt/download/JumpServer-Video-Player.dmg https://jms-pkg.oss-cn-beijing.aliyuncs.com/public/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg \
     && wget -qO /opt/download/JumpServer-Video-Player.exe https://jms-pkg.oss-cn-beijing.aliyuncs.com/public/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe \
-    && rm -rf /var/log/nginx/*.log \
+    && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
 
 COPY release/lina /opt/lina
