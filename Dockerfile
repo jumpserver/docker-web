@@ -1,7 +1,7 @@
 FROM nginx:1.22
 
 ARG Jmservisor_VERSION=v1.2.3
-ARG Client_VERSION=v1.1.6
+ARG Client_VERSION=v1.1.7
 ARG MRD_VERSION=10.6.7
 ARG VIDEO_PLAYER_VERSION=0.1.5
 
@@ -22,6 +22,7 @@ RUN set -e \
     && wget -qO /opt/download/JumpServer-Video-Player.dmg https://download.jumpserver.org/public/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg \
     && wget -qO /opt/download/JumpServer-Video-Player.exe https://download.jumpserver.org/public/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe \
     && apt-get clean all \
+    && rm -f /etc/cron.daily/apt-compat \
     && rm -rf /var/lib/apt/lists/*
 
 COPY release/lina /opt/lina
