@@ -22,6 +22,7 @@ RUN set -e \
     && wget -qO /opt/download/JumpServer-Video-Player.dmg https://download.jumpserver.org/public/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg \
     && wget -qO /opt/download/JumpServer-Video-Player.exe https://download.jumpserver.org/public/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe \
     && apt-get clean all \
+    && rm -f /etc/cron.daily/apt-compat \
     && rm -rf /var/lib/apt/lists/*
 
 COPY release/lina /opt/lina
