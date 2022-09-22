@@ -21,6 +21,7 @@ RUN set -e \
     && wget -qO /opt/download/JumpServer-Client-Installer-arm64.run https://download.jumpserver.org/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.run \
     && wget -qO /opt/download/JumpServer-Video-Player.dmg https://download.jumpserver.org/public/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg \
     && wget -qO /opt/download/JumpServer-Video-Player.exe https://download.jumpserver.org/public/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe \
+    && wget -qO /opt/download/OpenSSH-Win64.msi https://download.jumpserver.org/public/OpenSSH-Win64.msi \
     && apt-get clean all \
     && rm -f /etc/cron.daily/apt-compat \
     && rm -rf /var/lib/apt/lists/*
