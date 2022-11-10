@@ -8,9 +8,11 @@ ARG VIDEO_PLAYER_VERSION=0.1.5
 ARG PLAY_VERSION=1.1.0-1
 
 RUN set -ex \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends wget vim logrotate \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends wget vim logrotate locales \
+    && echo "no" | dpkg-reconfigure dash \
+    && echo "zh_CN.UTF-8" | dpkg-reconfigure locales \
     && mkdir -p /opt/download /opt/player /etc/nginx/sites-enabled \
     && cd /opt/download \
     && wget -qO /opt/download/Jmservisor.msi https://download.jumpserver.org/public/Jmservisor-${Jmservisor_VERSION}.msi \
