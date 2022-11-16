@@ -1,17 +1,17 @@
 FROM nginx:1.22
 
 ARG TARGETARCH
+ARG APT_MIRROR=http://mirrors.ustc.edu.cn
 
-RUN set -ex \
-    && sed -i 's@http://.*.debian.org@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
+    sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
+    && rm -f /etc/cron.daily/apt-compat \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apt-get update \
     && apt-get install -y --no-install-recommends wget vim logrotate locales \
     && echo "no" | dpkg-reconfigure dash \
     && echo "zh_CN.UTF-8" | dpkg-reconfigure locales \
     && rm -f /var/log/nginx/*.log \
-    && apt-get clean all \
-    && rm -f /etc/cron.daily/apt-compat \
     && rm -rf /var/lib/apt/lists/*
 
 ARG Jmservisor_VERSION=v1.2.5
