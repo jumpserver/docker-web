@@ -24,8 +24,8 @@ fi
 # https://github.com/jumpserver/installer/blob/dev/compose/docker-compose-lb.yml#L14
 if [ -n "${HTTPS_PORT}" ] && [ -f "/etc/nginx/sites-enabled/jumpserver.conf" ]; then
   cp -rf /etc/nginx/sites-enabled/jumpserver.conf /etc/nginx/conf.d/jumpserver.conf
-  sed -i "s@listen 80;@listen 8080;@g" /etc/nginx/conf.d/default.conf
-  sed -i "s@server web:80;@server web:8080;@g" /etc/nginx/conf.d/jumpserver.conf
+  sed -i "s@listen 80;@listen 127.0.0.1:11118;@g" /etc/nginx/conf.d/default.conf
+  sed -i "s@server web:80;@server 127.0.0.1:11118;@g" /etc/nginx/conf.d/jumpserver.conf
   sed -i "s@client_max_body_size .*;@client_max_body_size ${CLIENT_MAX_BODY_SIZE};@g" /etc/nginx/conf.d/jumpserver.conf
   if [ "${HTTP_PORT}" != "80" ]; then
     sed -i "s@listen 80;@listen ${HTTP_PORT};@g" /etc/nginx/conf.d/jumpserver.conf
