@@ -20,4 +20,4 @@ jobs:
         name: Check Build
         conclusion: ${{ job.status }}
         output: |
-          {"summary":${{ steps.test.outputs.summary }}}
+          {"summary": ""}}
