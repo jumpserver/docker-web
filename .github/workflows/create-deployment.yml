@@ -1,34 +1,18 @@
-name: create deployment
-
-on:
-  push:
-    branches:
-      - pr@*
-  pull_request:
-    branches:
-      - pr@*
-  workflow_dispatch:
+name: "build-test"
+on: [push]
 
 jobs:
-  create-deployment:
+  test_something:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - uses: LouisBrunner/checks-action@v1.3.1
-      id: check
+    - uses: actions/checkout@v1
+    - uses: actions/create-outputs@v0.0.0-fake
+      id: test
+    - uses: LouisBrunner/checks-action@v1.1.1
+      if: always()
       with:
-        sha: ${{ github.sha }}
-        token: ${{ github.token }}
-        name: Second Job
-        status: in_progress
-
-    - uses: LouisBrunner/checks-action@v1.3.1
-      if: failure()
-      with:
-        sha: ${{ github.sha }}
-        token: ${{ github.token }}
-        name: Second Job
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Check Build
         conclusion: ${{ job.status }}
         output: |
-          {"summary":""}
+          {"summary":${{ steps.test.outputs.summary }}}
