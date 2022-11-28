@@ -5,10 +5,14 @@ jobs:
   test_something:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/create-outputs@v0.0.0-fake
-      id: test
-    - uses: LouisBrunner/checks-action@v1.1.1
+    - uses: actions/checkout@v3
+
+    - uses: ilteoood/docker_buildx@master
+      with:
+        imageName: jumpserver/web
+        dockerFile: Dockerfile
+
+    - uses: LouisBrunner/checks-action@v1.5.0
       if: always()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
