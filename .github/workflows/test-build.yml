@@ -1,0 +1,17 @@
+name: Buildx test
+
+on:
+  push:
+    branches:
+      - pr@*
+    # Publish `v1.2.3` tags as releases.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test Build for Dockerfile
+      uses: ilteoood/docker_buildx@master
+      with:
+        imageName: jumpserver/web
