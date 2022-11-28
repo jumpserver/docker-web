@@ -1,0 +1,48 @@
+name: create deployment
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  create-deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: LouisBrunner/checks-action@v1.3.1
+      id: check
+      with:
+        sha: ${{ github.sha }}
+        token: ${{ github.token }}
+        name: Second Job
+        status: in_progress
+
+    - name: Trigger Workflow
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'deployment.yml',
+            ref: '${{ github.head_ref }}',
+            inputs: {
+              "workflow-input-1": "value-1",
+              "workflow-input-2": "value-2",
+            }
+          })
+
+    - uses: LouisBrunner/checks-action@v1.3.1
+      if: failure()
+      with:
+        sha: ${{ github.sha }}
+        token: ${{ github.token }}
+        name: Second Job
+        conclusion: ${{ job.status }}
+        output: |
+          {"summary":""}
+        output_text_description_file: code-coverage-results.md
