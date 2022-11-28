@@ -10,3 +10,11 @@ jobs:
       - uses: jumpserver/action-generic-handler@master
         env:
           GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Run create dir
+        run: |
+          mkdir -p release/lina release/luna
+      - name: Run test build
+        uses: ilteoood/docker_buildx@master
+        with:
+          imageName: jumpserver/web
