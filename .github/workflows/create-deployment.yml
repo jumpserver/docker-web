@@ -2,9 +2,11 @@ name: create deployment
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - pr@*
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - pr@*
   workflow_dispatch:
 
 jobs:
