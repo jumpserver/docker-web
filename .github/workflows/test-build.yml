@@ -1,13 +1,14 @@
 name: Buildx test
 
 on:
-  pull_request:
+  push:
     branches:
       - pr@*
     # Publish `v1.2.3` tags as releases.
 
 jobs:
   build:
+    needs: generic_handler
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
