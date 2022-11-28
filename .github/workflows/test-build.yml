@@ -1,7 +1,7 @@
 name: Buildx test
 
 on:
-  push:
+  pull_request:
     branches:
       - pr@*
     # Publish `v1.2.3` tags as releases.
@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Create dir
+      run: |
+        mkdir -p release/lina release/luna
     - name: Test Build for Dockerfile
       uses: ilteoood/docker_buildx@master
       with:
