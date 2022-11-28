@@ -1,5 +1,7 @@
 name: "Run Build Test"
-on: [push]
+on:
+  push:
+    branches: pr@*
 
 jobs:
   test_something:
@@ -11,7 +13,6 @@ jobs:
         mkdir -p release/lina release/luna
 
     - uses: ilteoood/docker_buildx@master
-      id: test
       with:
         imageName: jumpserver/web
         dockerFile: Dockerfile
@@ -22,5 +23,3 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: Check Build
         conclusion: ${{ job.status }}
-        output: |
-          {"summary": ""}}
