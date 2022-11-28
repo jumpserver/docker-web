@@ -1,4 +1,4 @@
-name: "build-test"
+name: "Run Build Test"
 on: [push]
 
 jobs:
@@ -6,6 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - run: |
+        mkdir -p release/lina release/luna
 
     - uses: ilteoood/docker_buildx@master
       id: test
