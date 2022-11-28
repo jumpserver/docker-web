@@ -2,27 +2,12 @@ name: deployment
 
 on:
   workflow_dispatch:
-    inputs:
-      workflow-input-1:
-        description: 'workflow-input-1'
-        required: true
-        default: ''
-      workflow-input-2:
-        description: 'workflow-input-2'
-        required: true
-        default: ''
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
-    - run: |
-        echo "Hello, world!"
-        echo "workflow-input-1 is ${{ github.event.inputs.workflow-input-1 }}"
-        echo "workflow-input-2 is ${{ github.event.inputs.workflow-input-2 }}"
-
     - uses: LouisBrunner/checks-action@v1.3.1
       if: always()
       with:

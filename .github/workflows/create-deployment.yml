@@ -23,21 +23,6 @@ jobs:
         name: Second Job
         status: in_progress
 
-    - name: Trigger Workflow
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'deployment.yml',
-            ref: '${{ github.head_ref }}',
-            inputs: {
-              "workflow-input-1": "value-1",
-              "workflow-input-2": "value-2",
-            }
-          })
-
     - uses: LouisBrunner/checks-action@v1.3.1
       if: failure()
       with:
