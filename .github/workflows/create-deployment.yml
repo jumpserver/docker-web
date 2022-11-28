@@ -1,0 +1,25 @@
+name: "Run Build Test"
+on:
+  push:
+    branches: pr@*
+
+jobs:
+  test_something:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: |
+        mkdir -p release/lina release/luna
+
+    - uses: ilteoood/docker_buildx@master
+      with:
+        imageName: jumpserver/web
+        dockerFile: Dockerfile
+
+    - uses: LouisBrunner/checks-action@v1.5.0
+      if: always()
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Check Build
+        conclusion: ${{ job.status }}
