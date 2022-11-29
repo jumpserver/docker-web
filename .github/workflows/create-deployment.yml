@@ -24,6 +24,8 @@ jobs:
         push: false
         tags: jumpserver/web:test
         file: Dockerfile
+        cache-from: type=registry,ref=jumpserver/web:buildcache
+        cache-to: type=registry,ref=jumpserver/web:buildcache,mode=max
 
     - uses: LouisBrunner/checks-action@v1.5.0
       if: always()
