@@ -1,6 +1,7 @@
 name: "Run Build Test"
 on:
-  push:
+  push
+  pull_request_target:
     branches:
       - pr@*
       - repr@*
@@ -20,6 +21,7 @@ jobs:
 
     - uses: docker/build-push-action@v3
       with:
+        context: .
         push: false
         tags: jumpserver/web:test
         file: Dockerfile
