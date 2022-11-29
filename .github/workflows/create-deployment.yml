@@ -1,7 +1,6 @@
 name: "Run Build Test"
 on:
-  push
-  pull_request_target:
+  push:
     branches:
       - pr@*
       - repr@*
