@@ -43,13 +43,12 @@ RUN set -ex \
 WORKDIR /opt/download/applets
 ARG TINKER_VERSION=v0.0.1
 ARG PYTHON_VERSION=3.10.8
-ARG CHROME_VERSION=107.0.5304.63
-ARG CHROMEDRIVER_VERSION=107.0.5304.62
+ARG CHROMIUM_VERSION=1100786
 
 RUN set -ex \
     && wget -qO navicat161_premium_en_x64.exe ${DOWNLOAD_URL}/public/navicat161_premium_en_x64.exe \
-    && wget -qO chromedriver_win32.zip ${DOWNLOAD_URL}/files/chromedriver/${CHROMEDRIVER_VERSION}/chromedriver_win32.zip \
-    && wget -qO googlechromestandaloneenterprise64.msi ${DOWNLOAD_URL}/files/chrome/${CHROME_VERSION}/googlechromestandaloneenterprise64.msi \
+    && wget -qO chromedriver_win32.zip ${DOWNLOAD_URL}/chromium-browser-snapshots/Win_x64/${CHROMIUM_VERSION}/Win_x64_${CHROMIUM_VERSION}chromedriver_win32.zip \
+    && wget -qO chrome-win.zip ${DOWNLOAD_URL}/chromium-browser-snapshots/Win_x64/${CHROMIUM_VERSION}/Win_x64_${CHROMIUM_VERSION}_chrome-win.zip \
     && wget -qO  Tinker_Installer.exe ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe \
     && wget -q  ${DOWNLOAD_URL}/public/python-${PYTHON_VERSION}-amd64.exe
 
