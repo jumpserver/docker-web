@@ -20,7 +20,7 @@ ARG PLAY_VERSION=1.1.0-1
 # 下载 player 脚本
 WORKDIR /opt/player
 RUN set -ex \
-    &&  wget -q ${DOWNLOAD_URL}/public/glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz \
+    && wget -q ${DOWNLOAD_URL}/public/glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz \
     && tar -xf glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz -C /opt/player --strip-components 1 \
     && rm -f glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz
 
@@ -46,6 +46,7 @@ WORKDIR /opt/download/applets
 ARG TINKER_VERSION=v0.0.1
 ARG PYTHON_VERSION=3.10.8
 ARG CHROMIUM_VERSION=1100786
+ARG DBEAVER_VERSION=22.3.4
 
 RUN set -ex \
     && wget -qO navicat161_premium_en_x64.exe ${DOWNLOAD_URL}/public/navicat161_premium_en_x64.exe \
