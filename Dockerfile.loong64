@@ -24,7 +24,7 @@ RUN set -ex \
 
 # 下载公共的客户端
 WORKDIR /opt/download/public
-ARG Client_VERSION=v1.1.7
+ARG Client_VERSION=v1.1.8
 ARG MRD_VERSION=10.6.7
 ARG VIDEO_PLAYER_VERSION=0.1.5
 
@@ -32,6 +32,7 @@ RUN set -ex \
     && mkdir -p /etc/nginx/sites-enabled \
     && wget -qO  JumpServer-Client-Installer-x86_64.msi ${DOWNLOAD_URL}/public/JumpServer-Client-Installer-${Client_VERSION}-x86_64.msi \
     && wget -qO  JumpServer-Client-Installer.dmg ${DOWNLOAD_URL}/public/JumpServer-Client-Installer-${Client_VERSION}.dmg \
+    && wget -qO  JumpServer-Client-Installer-m1.dmg ${DOWNLOAD_URL}/public/JumpServer-Client-Installer-${Client_VERSION}-m1.dmg \
     && wget -qO  JumpServer-Client-Installer-amd64.run ${DOWNLOAD_URL}/public/JumpServer-Client-Installer-${Client_VERSION}-amd64.run \
     && wget -qO  JumpServer-Client-Installer-arm64.run ${DOWNLOAD_URL}/public/JumpServer-Client-Installer-${Client_VERSION}-arm64.run \
     && wget -qO  JumpServer-Video-Player.dmg ${DOWNLOAD_URL}/public/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg \
