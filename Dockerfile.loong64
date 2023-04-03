@@ -24,7 +24,7 @@ RUN set -ex \
 
 # 下载公共的客户端
 WORKDIR /opt/download/public
-ARG Client_VERSION=v1.1.7
+ARG Client_VERSION=v1.1.8
 ARG MRD_VERSION=10.6.7
 ARG VIDEO_PLAYER_VERSION=0.1.5
 
@@ -42,7 +42,7 @@ RUN set -ex \
 
 # 下载 applets 的相关依赖
 WORKDIR /opt/download/applets
-ARG TINKER_VERSION=v0.0.1
+ARG TINKER_VERSION=v0.0.4
 ARG PYTHON_VERSION=3.10.8
 ARG CHROMIUM_VERSION=1100786
 ARG DBEAVER_VERSION=22.3.4
