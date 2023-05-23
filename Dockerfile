@@ -1,4 +1,4 @@
-FROM nginx:1.22
+FROM nginx:1.24
 
 ARG TARGETARCH
 ARG APT_MIRROR=http://mirrors.ustc.edu.cn
