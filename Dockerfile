@@ -46,15 +46,14 @@ RUN set -ex \
 WORKDIR /opt/download/applets
 ARG TINKER_VERSION=v0.1.0
 ARG PYTHON_VERSION=3.10.8
-ARG CHROMIUM_VERSION=1100786
+ARG CHROME_VERSION=114.0.5735.134
 ARG DBEAVER_VERSION=22.3.4
 
 RUN set -ex \
-    && wget -qO navicat161_premium_en_x64.exe ${DOWNLOAD_URL}/public/navicat161_premium_en_x64.exe \
-    && wget -qO chromedriver_win32.zip ${DOWNLOAD_URL}/chromium-browser-snapshots/Win_x64/${CHROMIUM_VERSION}/Win_x64_${CHROMIUM_VERSION}_chromedriver_win32.zip \
-    && wget -qO chrome-win.zip ${DOWNLOAD_URL}/chromium-browser-snapshots/Win_x64/${CHROMIUM_VERSION}/Win_x64_${CHROMIUM_VERSION}_chrome-win.zip \
     && wget -qO Tinker_Installer.exe ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe \
     && wget -qO dbeaver-patch.msi ${DOWNLOAD_URL}/public/dbeaver-patch-${DBEAVER_VERSION}-x86_64-setup.msi \
+    && wget -q https://github.com/wojiushixiaobai/Chrome-Portable-Win64/releases/download/${CHROME_VERSION}/chromedriver_win32.zip \
+    && wget -q https://github.com/wojiushixiaobai/Chrome-Portable-Win64/releases/download/${CHROME_VERSION}/chrome-win.zip \
     && wget -q ${DOWNLOAD_URL}/public/dbeaver-ce-${DBEAVER_VERSION}-x86_64-setup.exe \
     && wget -q ${DOWNLOAD_URL}/public/python-${PYTHON_VERSION}-amd64.exe
 
