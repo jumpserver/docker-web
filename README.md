@@ -6,7 +6,7 @@ JumpServer 的 LB Nginx Build 项目，其中包含 Lina, Luna 和一些静态�
 ```bash
 VERSION=dev
 docker run --rm -i -v $(pwd)/release:/tmp/data jumpserver/lina:${VERSION} cp -R /opt/lina /tmp/data
-docker run --rm -i -v $(pwd)/release:/tmp/data jumpserver/luna:${VERSION} cp -R /opt/lina /tmp/data
+docker run --rm -i -v $(pwd)/release:/tmp/data jumpserver/luna:${VERSION} cp -R /opt/luna /tmp/data
 docker run --rm -i -v $(pwd)/release:/tmp/data jumpserver/applets:${VERSION} cp -R /opt/applets /tmp/data
 ```
 ```bash
