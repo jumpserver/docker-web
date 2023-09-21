@@ -26,7 +26,7 @@ RUN set -ex \
 
 # 下载公共的客户端
 WORKDIR /opt/download/public
-ARG Client_VERSION=v2.0.0
+ARG Client_VERSION=v2.0.1
 ARG MRD_VERSION=10.6.7
 ARG VIDEO_PLAYER_VERSION=0.1.9
 ARG OPENSSH_VERSION=v9.2.0.0
@@ -64,5 +64,6 @@ COPY release/lina /opt/lina
 COPY release/luna /opt/luna
 COPY release/applets /opt/download/applets
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY includes /etc/nginx/includes
 COPY http_server.conf /etc/nginx/conf.d/default.conf
 COPY init.sh /docker-entrypoint.d/40-init-config.sh

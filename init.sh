@@ -53,6 +53,27 @@ if [ -n "${HTTPS_PORT}" ] && [ -f "/etc/nginx/sites-enabled/jumpserver.conf" ]; 
   fi
 fi
 
+# config components
+if [ "${CORE_ENABLED}" == "0" ]; then
+  mv /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
+fi
+
+if [ "${KOKO_ENABLED}" == "0" ]; then
+  mv /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
+fi
+
+if [ "${LION_ENABLED}" == "0" ]; then
+  mv /etc/nginx/includes/lion.conf /etc/nginx/includes/lion.conf.disabled
+fi
+
+if [ "${CHEN_ENABLED}" == "0" ]; then
+  mv /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
+fi
+
+if [ "${KAEL_ENABLED}" == "0" ]; then
+  mv /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
+fi
+
 if [ -f "/etc/init.d/cron" ]; then
   /etc/init.d/cron start
 fi
