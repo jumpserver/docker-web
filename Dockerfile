@@ -36,7 +36,7 @@ RUN set -ex \
     && wget -q ${DOWNLOAD_URL}/public/dbeaver-ce-${DBEAVER_VERSION}-x86_64-setup.exe \
     && wget -qO dbeaver-patch.msi ${DOWNLOAD_URL}/public/dbeaver-patch-${DBEAVER_VERSION}-x86_64-setup.msi
 
-ARG TINKER_VERSION=v0.1.2
+ARG TINKER_VERSION=v0.1.3
 RUN set -ex \
     && wget -qO Tinker_Installer.exe ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
 
