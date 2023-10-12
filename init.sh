@@ -81,6 +81,8 @@ function config_https() {
     HTTPS_PORT=443
   fi
 
+  sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
+
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@listen 443@listen [::]:443@g" "${config_file}"
   fi
