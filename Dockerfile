@@ -22,9 +22,9 @@ RUN set -ex \
 
 WORKDIR /opt/download/applets
 
-ARG PYTHON_VERSION=3.10.11
+ARG PYTHON_VERSION=3.11.6
 RUN set -ex \
-    && wget -q ${DOWNLOAD_URL}/public/python-${PYTHON_VERSION}-amd64.exe
+    && wget -q https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-amd64.exe
 
 ARG CHROME_VERSION=114.0.5735.134
 RUN set -ex \
