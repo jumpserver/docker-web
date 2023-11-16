@@ -27,6 +27,7 @@ function config_nginx() {
   fi
 
   if [ -n "${SERVER_NAME}" ]; then
+    SERVER_NAME=$(echo "$SERVER_NAME" | sed 's/,/ /g; s/ *$//')
     sed -i "s@# server_name .*;@server_name ${SERVER_NAME};@g" "${config_file}"
   fi
 
