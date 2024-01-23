@@ -16,9 +16,9 @@ function config_nginx() {
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
-    sed -i "s@# listen [::]:80;@listen [::]:80;@g" "${config_file}"
+    sed -i "s@# listen \[::\]:80;@listen \[::\]:80;@g" "${config_file}"
     if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-      sed -i "s@# listen [::]:51980;@listen [::]:51980;@g" /etc/nginx/conf.d/default.conf
+      sed -i "s@# listen \[::\]:51980;@listen \[::\]:51980;@g" /etc/nginx/conf.d/default.conf
     fi
   fi
 
@@ -88,7 +88,7 @@ function config_https() {
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
 
   if [ "${USE_IPV6}" == "1" ]; then
-    sed -i "s@listen 443@listen [::]:443@g" "${config_file}"
+    sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
   fi
 
   if [ "${HTTPS_PORT}" != "443" ]; then
