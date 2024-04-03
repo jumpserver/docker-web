@@ -47,7 +47,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
 WORKDIR /opt
 
 COPY --from=stage-build /usr/local/bin /usr/local/bin
-COPY --from=static /opt/download/applets /opt/download/applets
+COPY --from=static /opt /opt
 COPY --from=lina /opt/lina /opt/lina
 COPY --from=luna /opt/luna /opt/luna
 COPY --from=applets /opt/applets /opt/download/applets
