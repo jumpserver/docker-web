@@ -133,7 +133,7 @@ function config_components() {
   fi
 
   if [ "${USE_XPACK}" == "1" ]; then
-    if [ "${RAZOR_ENABLED}" == "1" ]; then
+    if [ "${RAZOR_ENABLED}" != "0" ]; then
       mv /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
     fi
   fi
