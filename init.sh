@@ -131,6 +131,10 @@ function config_components() {
   if [ "${KAEL_ENABLED}" == "0" ]; then
     mv /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
   fi
+
+  if [ "${USE_GRAFANA}" == "1" ]; then
+    mv /etc/nginx/includes/grafana.conf.disabled /etc/nginx/includes/grafana.conf
+  fi
 }
 
 function main() {
