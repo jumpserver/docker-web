@@ -3,14 +3,20 @@ FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} as lina
 FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} as luna
 FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} as applets
 
-FROM debian:bookworm-slim as stage-build
+FROM debian:bullseye-slim as stage-build
 ARG TARGETARCH
 
 ARG DEPENDENCIES="                    \
         ca-certificates               \
         wget"
 
-RUN set -ex \
+ARG APT_MIRROR=http://mirrors.ustc.edu.cn
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
+    set -ex \
+    && rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache \
+    && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
     && apt-get update \
     && apt-get -y install --no-install-recommends ${DEPENDENCIES} \
     && echo "no" | dpkg-reconfigure dash \
@@ -33,8 +39,11 @@ ARG TARGETARCH
 
 ARG APT_MIRROR=http://mirrors.ustc.edu.cn
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
-    sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
-    && rm -f /etc/cron.daily/apt-compat \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
+    set -ex \
+    && rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache \
+    && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apt-get update \
     && apt-get install -y --no-install-recommends wget vim logrotate locales \
