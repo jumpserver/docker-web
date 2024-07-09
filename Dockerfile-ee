@@ -2,4 +2,14 @@ ARG VERSION
 FROM registry.fit2cloud.com/jumpserver/web-static:v4.0.0 as static
 FROM registry.fit2cloud.com/jumpserver/web:${VERSION}-ce
 
+ARG DEPENDENCIES="                    \
+        curl                          \
+        vim"
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
+    set -ex \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ${DEPENDENCIES}
+
 COPY --from=static /opt /opt
