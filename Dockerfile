@@ -1,9 +1,9 @@
 ARG VERSION
-FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} as lina
-FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} as luna
-FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} as applets
+FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} AS lina
+FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} AS luna
+FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} AS applets
 
-FROM debian:bullseye-slim as stage-build
+FROM debian:bullseye-slim AS stage-build
 ARG TARGETARCH
 
 ARG DEPENDENCIES="                    \
