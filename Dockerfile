@@ -1,7 +1,7 @@
 ARG VERSION
-FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} AS lina
-FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} AS luna
-FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} AS applets
+FROM jumpserver/lina:${VERSION} AS lina
+FROM jumpserver/luna:${VERSION} AS luna
+FROM jumpserver/applets:20240722_024231 AS applets
 
 FROM debian:bullseye-slim AS stage-build
 ARG TARGETARCH
@@ -10,7 +10,7 @@ ARG DEPENDENCIES="                    \
         ca-certificates               \
         wget"
 
-ARG APT_MIRROR=http://mirrors.ustc.edu.cn
+ARG APT_MIRROR=http://deb.debian.org
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
     --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
     set -ex \
