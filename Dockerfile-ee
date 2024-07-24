@@ -1,5 +1,5 @@
 ARG VERSION
-#FROM jumpserver/web-static:v4.0.0 AS static
+#FROM jumpserver/web-static:20240724_022748 static
 FROM jumpserver/web:${VERSION}-ce
 
 ARG DEPENDENCIES="                    \
