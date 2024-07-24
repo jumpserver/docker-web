@@ -1,16 +1,16 @@
 ARG VERSION
-FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} as lina
-FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} as luna
-FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} as applets
+FROM jumpserver/lina:${VERSION} AS lina
+FROM jumpserver/luna:${VERSION} AS luna
+FROM jumpserver/applets:20240722_024231 AS applets
 
-FROM debian:bullseye-slim as stage-build
+FROM debian:bullseye-slim AS stage-build
 ARG TARGETARCH
 
 ARG DEPENDENCIES="                    \
         ca-certificates               \
         wget"
 
-ARG APT_MIRROR=http://mirrors.ustc.edu.cn
+ARG APT_MIRROR=http://deb.debian.org
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
     --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
     set -ex \
@@ -37,6 +37,11 @@ RUN set -ex \
 FROM nginx:1.24-bullseye
 ARG TARGETARCH
 
+ARG DEPENDENCIES="                    \
+        ca-certificates               \
+        logrotate                     \
+        wget"
+
 ARG APT_MIRROR=http://mirrors.ustc.edu.cn
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
     --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
@@ -46,9 +51,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
     && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apt-get update \
-    && apt-get install -y --no-install-recommends wget vim logrotate locales \
+    && apt-get install -y --no-install-recommends ${DEPENDENCIES} \
     && echo "no" | dpkg-reconfigure dash \
-    && echo "zh_CN.UTF-8" | dpkg-reconfigure locales \
     && rm -f /var/log/nginx/*.log \
     && rm -rf /var/lib/apt/lists/*
 

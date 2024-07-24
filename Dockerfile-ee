@@ -1,5 +1,15 @@
 ARG VERSION
-FROM registry.fit2cloud.com/jumpserver/web-static:20240724_022748 static
-FROM registry.fit2cloud.com/jumpserver/web:${VERSION}-ce
+#FROM jumpserver/web-static:20240724_022748 static
+FROM jumpserver/web:${VERSION}-ce
 
-COPY --from=static /opt /opt
+ARG DEPENDENCIES="                    \
+        curl                          \
+        vim"
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
+    set -ex \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ${DEPENDENCIES}
+
+#COPY --from=static /opt /opt
