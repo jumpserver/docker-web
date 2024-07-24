@@ -11,10 +11,8 @@ ARG DEPENDENCIES="                    \
         logrotate                     \
         wget"
 
-ARG APT_MIRROR=http://mirrors.ustc.edu.cn
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked,id=web \
-    set -ex \
+ARG APT_MIRROR=http://deb.debian.org
+RUN set -ex \
     && rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache \
     && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
