@@ -1,8 +1,7 @@
 ARG VERSION
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
-FROM jumpserver/applets:20240722_024231 AS applets
-FROM jumpserver/web-static:20240724_053058 AS static
+FROM jumpserver/web-static:20240725_084903 AS static
 
 FROM nginx:1.24-bullseye
 ARG TARGETARCH
@@ -28,8 +27,7 @@ WORKDIR /opt
 
 COPY --from=lina /opt/lina /opt/lina
 COPY --from=luna /opt/luna /opt/luna
-COPY --from=applets /opt/applets /opt/download/applets
-COPY --from=applets /usr/local/bin /usr/local/bin
+COPY --from=static /usr/local/bin /usr/local/bin
 COPY --from=static /tmp/opt/download/versions.txt /opt/download/versions.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
