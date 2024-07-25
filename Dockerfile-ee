@@ -10,4 +10,4 @@ RUN set -ex \
     && apt-get update \
     && apt-get install -y --no-install-recommends ${DEPENDENCIES}
 
-COPY --from=static /tmp/opt/* /opt
+COPY --from=static /tmp/opt/ /opt/
