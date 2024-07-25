@@ -1,7 +1,7 @@
 ARG VERSION
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
-FROM jumpserver/web-static:20240725_084903 AS static
+FROM jumpserver/web-static:20240725_093508 AS static
 
 FROM nginx:1.24-bullseye
 ARG TARGETARCH
