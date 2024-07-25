@@ -9,7 +9,7 @@ PROJECT_DIR=$(cd `dirname $0`; pwd)
 
 . "${PROJECT_DIR}"/versions.txt
 
-DOWNLOAD_URL=https://download.jumpserver.org
+DOWNLOAD_URL=https://jms-pkg.fit2cloud.com
 
 mkdir -p /opt/player
 cd /opt/player || exit 1
