@@ -8,6 +8,7 @@ ARG DEPENDENCIES="                    \
 
 RUN set -ex \
     && apt-get update \
-    && apt-get install -y --no-install-recommends ${DEPENDENCIES}
+    && apt-get install -y --no-install-recommends ${DEPENDENCIES} \
+    && apt-get clean
 
 COPY --from=static /tmp/opt/ /opt/
