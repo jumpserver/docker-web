@@ -43,7 +43,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: jumpserver/web-static:${{ env.IMAGE_TAG }}
-          file: Dockerfile
+          file: Dockerfile-static
 
       - name: Get current branch name
         id: get_branch
@@ -56,7 +56,6 @@ jobs:
 
       - name: Update docker-web dependencies applets
         run: |
-          git checkout -b ${{ env.current_branch }}
           sed -E -i 's|jumpserver/web-static:\w+ |jumpserver/web-static:${{ env.IMAGE_TAG }} |' Dockerfile-ee
           sed -E -i 's|jumpserver/web-static:\w+ |jumpserver/web-static:${{ env.IMAGE_TAG }} |' Dockerfile
           git add Dockerfile-ee Dockerfile
