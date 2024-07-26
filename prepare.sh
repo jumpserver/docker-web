@@ -9,7 +9,7 @@ PROJECT_DIR=$(cd `dirname $0`; pwd)
 
 . "${PROJECT_DIR}"/versions.txt
 
-DOWNLOAD_URL=https://download.jumpserver.org
+DOWNLOAD_URL=https://jms-pkg.fit2cloud.com
 
 mkdir -p /opt/player
 cd /opt/player || exit 1
@@ -32,7 +32,6 @@ cd ${DOWNLOAD_DIR}/public || exit 1
 wget ${DOWNLOAD_URL}/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg
 wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg
 wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe
-
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
 clients=("win-${CLIENT_VERSION}-x64.exe" "mac-${CLIENT_VERSION}-x64.dmg" "mac-${CLIENT_VERSION}-arm64.dmg"
