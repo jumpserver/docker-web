@@ -6,7 +6,8 @@ FROM nginx:1.24-alpine
 ARG TARGETARCH
 
 ARG CHECK_VERSION=v1.0.2
-RUN wget https://github.com/jumpserver-dev/healthcheck/releases/download/${CHECK_VERSION}/check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
+RUN apk add --no-cache bash  \
+    && wget https://github.com/jumpserver-dev/healthcheck/releases/download/${CHECK_VERSION}/check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
     && tar -xf check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
     && mv check /usr/local/bin/ \
     && chown root:root /usr/local/bin/check \
