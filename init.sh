@@ -139,6 +139,12 @@ function config_components() {
   fi
 }
 
+function copy_versions_to_core() {
+  if [[ -f "/opt/download/versions.txt" && -d "/opt/jumpserver/data/"  ]]; then
+    cp -f /opt/download/versions.txt /opt/jumpserver/data/version.txt
+  fi
+}
+
 function main() {
   if [ -f "/etc/nginx/sites-enabled/jms.conf" ]; then
     config_helm
@@ -155,6 +161,8 @@ function main() {
   if [ -f "/etc/init.d/cron" ]; then
     /etc/init.d/cron start
   fi
+
+  copy_versions_to_core
 }
 
 main
