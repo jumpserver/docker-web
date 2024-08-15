@@ -128,14 +128,16 @@ function config_components() {
     mv /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${KAEL_ENABLED}" == "0" ]; then
-    mv /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
-  fi
-
   if [ "${USE_XPACK}" == "1" ]; then
     if [ "${RAZOR_ENABLED}" != "0" ]; then
       mv /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
     fi
+  fi
+}
+
+function copy_versions_to_core() {
+  if [[ -f "/opt/download/versions.txt" && -d "/opt/jumpserver/data/"  ]]; then
+    cp -f /opt/download/versions.txt /opt/jumpserver/data/version.txt
   fi
 }
 
@@ -155,6 +157,8 @@ function main() {
   if [ -f "/etc/init.d/cron" ]; then
     /etc/init.d/cron start
   fi
+
+  copy_versions_to_core
 }
 
 main

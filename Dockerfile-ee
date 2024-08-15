@@ -1,5 +1,13 @@
-ARG VERSION
-FROM registry.fit2cloud.com/jumpserver/web-static:v4.0.0 as static
-FROM registry.fit2cloud.com/jumpserver/web:${VERSION}-ce
+ARG VERSION=dev
+FROM jumpserver/web-static:20240801_063928 AS static
+FROM jumpserver/web:${VERSION}-ce
 
-COPY --from=static /opt /opt
+ARG DEPENDENCIES="                    \
+        curl                          \
+        vim"
+
+ARG APK_MIRROR=dl-cdn.alpinelinux.org
+RUN sed -i "s/dl-cdn.alpinelinux.org/${APK_MIRROR}/g" /etc/apk/repositories \
+    && apk add --no-cache ${DEPENDENCIES}
+
+COPY --from=static /opt/ /opt/
