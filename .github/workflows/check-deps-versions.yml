@@ -1,0 +1,54 @@
+on:
+  schedule:
+    - cron: '0 1 * * *'
+
+name: Check Dependencies Versions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        branch: [dev]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.branch }}
+
+      - name: Check client version
+        run: |
+          version=$(curl -s https://api.github.com/repos/jumpserver/clients/releases/latest | jq -r .tag_name)
+          sed -i "s/Client_VERSION=.*/Client_VERSION=${version}/g" versions.txt
+
+      - name: Check player version
+        run: |
+          version=$(curl -s https://api.github.com/repos/jumpserver/VideoPlayer/releases/latest | jq -r .tag_name | sed 's/v//')
+          echo "version=${version}" >> $GITHUB_ENV
+          sed -i "s/VIDEO_PLAYER_VERSION=.*/VIDEO_PLAYER_VERSION=${version}/g" versions.txt
+
+      - name: Check tinker version
+        run: |
+          version=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/jumpserver/tinker/releases/latest | jq -r .tag_name)
+          sed -i "s/TINKER_VERSION=.*/TINKER_VERSION=${version}/g" versions.txt
+
+      - name: Need update
+        run: |
+          need_update=0
+          if [ -n "$(git status --porcelain)" ]; then
+            need_update=1
+          fi
+          echo "need_update=${need_update}" >> $GITHUB_ENV
+
+      - name: Update Client Version
+        if: env.need_update == '1'
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git add .
+          git commit -m "Update pkg versions"
+          git push origin pr@${{ matrix.branch }}@upgrade_client
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
