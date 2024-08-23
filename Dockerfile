@@ -11,6 +11,8 @@ ARG APT_MIRROR=http://deb.debian.org
 ARG TOOLS="                           \
         ca-certificates               \
         wget                          \
+        curl                          \
+        vim                           \
         "
 
 RUN set -ex \
