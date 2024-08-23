@@ -2,11 +2,23 @@ ARG VERSION
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
-FROM nginx:1.24-alpine
+FROM nginx:1.24-bullseye
 ARG TARGETARCH
 
 ARG CHECK_VERSION=v1.0.3
-RUN apk add --no-cache bash  \
+ARG APT_MIRROR=http://deb.debian.org
+
+ARG TOOLS="                           \
+        ca-certificates               \
+        wget                          \
+        "
+
+RUN set -ex \
+    && rm -f /etc/apt/apt.conf.d/docker-clean \
+    && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
+    && apt-get update > /dev/null \
+    && apt-get -y install --no-install-recommends ${TOOLS} \
+    && apt-get clean \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/download/${CHECK_VERSION}/check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
     && tar -xf check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
     && mv check /usr/local/bin/ \
