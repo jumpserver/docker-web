@@ -50,6 +50,7 @@ jobs:
         run: |
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b pr@${{ matrix.branch }}@upgrade_client
           git add .
           git commit -m "Update pkg versions"
           git push origin pr@${{ matrix.branch }}@upgrade_client
