@@ -1,6 +1,9 @@
 on:
   schedule:
     - cron: '0 1 * * *'
+  push:
+    branches:
+      - dev
 
 name: Check Dependencies Versions
 
