@@ -51,4 +51,4 @@ jobs:
           git commit -m "Update pkg versions"
           git push origin pr@${{ matrix.branch }}@upgrade_client
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
