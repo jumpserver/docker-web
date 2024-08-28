@@ -61,3 +61,5 @@ jobs:
           git add Dockerfile-ee Dockerfile
           git commit -m "perf: Update web static version"
           git push origin ${{ env.current_branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
