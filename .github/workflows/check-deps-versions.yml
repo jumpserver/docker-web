@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
     strategy:
       matrix:
         branch: [dev]
@@ -54,5 +54,3 @@ jobs:
           git add .
           git commit -m "Update pkg versions"
           git push origin pr@${{ matrix.branch }}@upgrade_client
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
