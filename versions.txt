@@ -1,3 +1,6 @@
+# 更改这些版本号，目前需要同步修改
+# 1. https://github.com/jumpserver/jumpserver/blob/dev/apps/jumpserver/views/other.py#L99
+# 2. https://github.com/jumpserver/jumpserver/blob/dev/apps/terminal/automations/deploy_applet_host/playbook.yml#L18
 PLAY_VERSION=1.1.0-1
 PYTHON_VERSION=3.11.6
 CHROME_VERSION=118.0.5993.118
