@@ -1,4 +1,4 @@
-ARG VERSION
+ARG VERSION=dev
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
