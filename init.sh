@@ -110,28 +110,32 @@ function config_https() {
   fi
 }
 
+function safe_move() {
+  if [ -f "$1" ]; then
+    mv "$1" "$2"
+  fi
+}
+
 # config components
 function config_components() {
   if [ "${CORE_ENABLED}" == "0" ]; then
-    mv /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
+    safe_move /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
   fi
 
   if [ "${KOKO_ENABLED}" == "0" ]; then
-    mv /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
+    safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
   fi
 
   if [ "${LION_ENABLED}" == "0" ]; then
-    mv /etc/nginx/includes/lion.conf /etc/nginx/includes/lion.conf.disabled
+    safe_move /etc/nginx/includes/lion.conf /etc/nginx/includes/lion.conf.disabled
   fi
 
   if [ "${CHEN_ENABLED}" == "0" ]; then
-    mv /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
+    safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${USE_XPACK}" == "1" ]; then
-    if [ "${RAZOR_ENABLED}" != "0" ]; then
-      mv /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
-    fi
+  if [[ "${USE_XPACK}" == "1" && "${RAZOR_ENABLED}" != "0" ]]; then
+    safe_move /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
   fi
 }
 
