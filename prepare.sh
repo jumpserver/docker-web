@@ -22,7 +22,7 @@ mkdir -p ${DOWNLOAD_DIR}/applets
 cd ${DOWNLOAD_DIR}/applets || exit 1
 wget -O chromedriver-${CHROME_DRIVER_VERSION}-win64.zip https://github.com/jumpserver-dev/Chrome-Portable-Win64/releases/download/${CHROME_DRIVER_VERSION}/chromedriver-win64.zip
 wget -O chrome-${CHROME_VERSION}-win.zip https://github.com/jumpserver-dev/Chrome-Portable-Win64/releases/download/${CHROME_VERSION}/chrome-win.zip
-wget https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-amd64.exe
+wget https://github.com/jumpserver-dev/Python-Embed-Win64/releases/download/${PYTHON_VERSION}/jumpserver-tinker-python-${PYTHON_VERSION}-win64.zip
 wget ${DOWNLOAD_URL}/public/dbeaver-ce-${DBEAVER_VERSION}-x86_64-setup.exe
 wget ${DOWNLOAD_URL}/public/dbeaver-patch-${DBEAVER_VERSION}-x86_64-setup.msi
 wget ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
