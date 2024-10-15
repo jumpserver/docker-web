@@ -21,9 +21,33 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
 
-      - name: Extract date
-        id: vars
-        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - name: Set up Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Check if branch exists
+        id: check_branch
+        run: |
+          BRANCH_EXISTS=$(git ls-remote --heads origin pr@${{ matrix.branch }}@upgrade_client)
+          if [ -n "$BRANCH_EXISTS" ]; then
+            echo "Branch exists, checking it out."
+            echo "branch_exists=true" >> $GITHUB_ENV
+          else
+            echo "Branch does not exist, will create new one."
+            echo "branch_exists=false" >> $GITHUB_ENV
+          fi
+          
+      - name: Checkout existing branch or create new one
+        run: |
+          if [ "$branch_exists" == "true" ]; then
+            git checkout pr@${{ matrix.branch }}@upgrade_client
+          else
+            git checkout -b pr@${{ matrix.branch }}@upgrade_client
+          fi
 
       - name: Check client version
         run: |
@@ -52,9 +76,6 @@ jobs:
       - name: Update Client Version
         if: env.need_update == '1'
         run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git checkout -b pr@${{ matrix.branch }}@upgrade_client_${DATE}
           git add .
           git commit -m "Update pkg versions"
           git push origin 
