@@ -21,6 +21,10 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
 
+      - name: Extract date
+        id: vars
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
       - name: Check client version
         run: |
           version=$(curl -s https://api.github.com/repos/jumpserver/clients/releases/latest | jq -r .tag_name)
@@ -50,7 +54,7 @@ jobs:
         run: |
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git checkout -b pr@${{ matrix.branch }}@upgrade_client
+          git checkout -b pr@${{ matrix.branch }}@upgrade_client_${DATE}
           git add .
           git commit -m "Update pkg versions"
-          git push origin pr@${{ matrix.branch }}@upgrade_client
+          git push origin 
