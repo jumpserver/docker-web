@@ -5,7 +5,7 @@ FROM jumpserver/luna:${VERSION} AS luna
 FROM nginx:1.24-bullseye
 ARG TARGETARCH
 
-ARG CHECK_VERSION=v1.0.3
+ARG CHECK_VERSION=v1.0.4
 ARG APT_MIRROR=http://deb.debian.org
 
 ARG TOOLS="                           \

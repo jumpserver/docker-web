@@ -22,7 +22,7 @@ mkdir -p ${DOWNLOAD_DIR}/applets
 cd ${DOWNLOAD_DIR}/applets || exit 1
 wget -O chromedriver-${CHROME_DRIVER_VERSION}-win64.zip https://github.com/jumpserver-dev/Chrome-Portable-Win64/releases/download/${CHROME_DRIVER_VERSION}/chromedriver-win64.zip
 wget -O chrome-${CHROME_VERSION}-win.zip https://github.com/jumpserver-dev/Chrome-Portable-Win64/releases/download/${CHROME_VERSION}/chrome-win.zip
-wget https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-amd64.exe
+wget https://github.com/jumpserver-dev/Python-Embed-Win64/releases/download/${PYTHON_VERSION}/jumpserver-tinker-python-${PYTHON_VERSION}-win64.zip
 wget ${DOWNLOAD_URL}/public/dbeaver-ce-${DBEAVER_VERSION}-x86_64-setup.exe
 wget ${DOWNLOAD_URL}/public/dbeaver-patch-${DBEAVER_VERSION}-x86_64-setup.msi
 wget ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
@@ -30,8 +30,8 @@ wget ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
 mkdir -p ${DOWNLOAD_DIR}/public
 cd ${DOWNLOAD_DIR}/public || exit 1
 wget ${DOWNLOAD_URL}/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg
-wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServer.Video.Player-${VIDEO_PLAYER_VERSION}.dmg
-wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServer.Video.Player.Setup.${VIDEO_PLAYER_VERSION}.exe
+wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.dmg
+wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.exe
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
 clients=("win-${CLIENT_VERSION}-x64.exe" "mac-${CLIENT_VERSION}-x64.dmg" "mac-${CLIENT_VERSION}-arm64.dmg"

@@ -78,4 +78,4 @@ jobs:
         run: |
           git add .
           git commit -m "Update pkg versions"
-          git push origin 
+          git push origin pr@${{ matrix.branch }}@upgrade_client
