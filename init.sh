@@ -141,6 +141,11 @@ function config_components() {
   if [[ "${USE_XPACK}" == "1" && "${RAZOR_ENABLED}" != "0" ]]; then
     safe_move /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
   fi
+
+  if [[ "${USE_XPACK}" == "1" && "${FACELIVE_ENABLED}" == "1" ]]; then
+    safe_move /etc/nginx/includes/facelive.conf.disabled /etc/nginx/includes/facelive.conf
+  fi
+
 }
 
 function copy_versions_to_core() {
