@@ -145,12 +145,17 @@ function config_components() {
   if [[ "${USE_XPACK}" == "1" && "${FACELIVE_ENABLED}" == "1" ]]; then
     safe_move /etc/nginx/includes/facelive.conf.disabled /etc/nginx/includes/facelive.conf
   fi
-
 }
 
 function copy_versions_to_core() {
   if [[ -f "/opt/download/versions.txt" && -d "/opt/jumpserver/data/"  ]]; then
     cp -f /opt/download/versions.txt /opt/jumpserver/data/version.txt
+  fi
+}
+
+function config_gzip() {
+  if [[ "${GZIP}" == "off" ]]; then
+    sed -i "s@gzip .*;@gzip ${GZIP};@g" /etc/nginx/conf.d/*.conf
   fi
 }
 
@@ -172,6 +177,7 @@ function main() {
   fi
 
   copy_versions_to_core
+  config_gzip
 }
 
 main
