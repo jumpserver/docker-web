@@ -2,10 +2,10 @@ ARG VERSION=dev
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
-FROM nginx:1.24-bullseye
+FROM jumpserver/nginx:1.24-bullseye
 ARG TARGETARCH
 
-ARG CHECK_VERSION=v1.0.4
+ARG CHECK_VERSION=v1.0.5
 ARG APT_MIRROR=http://deb.debian.org
 
 ARG TOOLS="                           \
