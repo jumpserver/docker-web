@@ -2,7 +2,7 @@ ARG VERSION=dev
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
-FROM jumpserver/nginx:1.24-bullseye
+FROM nginx:1.29-trixie
 ARG TARGETARCH
 
 ARG CHECK_VERSION=v1.0.5
@@ -17,7 +17,7 @@ ARG TOOLS="                           \
 
 RUN set -ex \
     && rm -f /etc/apt/apt.conf.d/docker-clean \
-    && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
+    && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list.d/debian.sources\
     && apt-get update > /dev/null \
     && apt-get -y install --no-install-recommends ${TOOLS} \
     && apt-get clean \
