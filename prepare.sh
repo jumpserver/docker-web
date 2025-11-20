@@ -44,7 +44,7 @@ clients=(
     "JumpServerClient-${CLIENT_VERSION}-1.x86_64.rpm"
 )
 for client in "${clients[@]}"; do
-    wget "https://github.com/jumpserver/clients/releases/download/${CLIENT_VERSION}/${client}"
+    wget "https://github.com/jumpserver/clients/releases/download/v${CLIENT_VERSION}/${client}"
 done
 
 for arch in x64 arm64; do
