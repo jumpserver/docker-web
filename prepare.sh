@@ -35,13 +35,8 @@ wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
 clients=(
-    "JumpServerClient_${CLIENT_VERSION}_x64_en-US.msi"
     "JumpServerClient_${CLIENT_VERSION}_x64-setup.exe"
     "JumpServerClient_${CLIENT_VERSION}_aarch64.dmg"
-    "JumpServerClient_${CLIENT_VERSION}_x64.dmg"
-    "JumpServerClient_${CLIENT_VERSION}_amd64.AppImage"
-    "JumpServerClient_${CLIENT_VERSION}_amd64.deb"
-    "JumpServerClient-${CLIENT_VERSION}-1.x86_64.rpm"
 )
 for client in "${clients[@]}"; do
     wget "https://github.com/jumpserver/clients/releases/download/v${CLIENT_VERSION}/${client}"
