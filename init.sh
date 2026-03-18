@@ -8,9 +8,6 @@ function config_nginx() {
     exit 1
   fi
 
-  if [ -z "${HTTP_PORT}" ]; then
-    HTTP_PORT=80
-  fi
   if [ -z "${USE_LB}" ]; then
     USE_LB=1
   fi
@@ -19,13 +16,6 @@ function config_nginx() {
     sed -i "s@# listen \[::\]:80;@listen \[::\]:80;@g" "${config_file}"
     if [ -f "/etc/nginx/conf.d/default.conf" ]; then
       sed -i "s@# listen \[::\]:51980;@listen \[::\]:51980;@g" /etc/nginx/conf.d/default.conf
-    fi
-  fi
-
-  if [ "${HTTP_PORT}" != "80" ]; then
-    sed -i "s@listen 80;@listen ${HTTP_PORT};@g" "${config_file}"
-    if [ "${USE_IPV6}" == "1" ]; then
-      sed -i "s@listen \[::\]:80;@listen \[::\]:${HTTP_PORT};@g" "${config_file}"
     fi
   fi
 
@@ -89,14 +79,6 @@ function config_https() {
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
-  fi
-
-  if [ "${HTTPS_PORT}" != "443" ]; then
-    sed -i "s@listen 443@listen ${HTTPS_PORT}@g" "${config_file}"
-    sed -i "s@https://\$server_name\$request_uri;@https://\$server_name:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
-    if [ "${USE_IPV6}" == "1" ]; then
-      sed -i "s@listen \[::\]:443@listen \[::\]:${HTTPS_PORT}@g" "${config_file}"
-    fi
   fi
 
   if [ -n "${SSL_CERTIFICATE}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE}" ]; then
