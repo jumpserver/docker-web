@@ -33,6 +33,15 @@ function config_nginx() {
   else
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
   fi
+
+  if [ -n "${BASIC_PASSWORD}" ] && [ -n "${BASIC_USER}" ]; then
+    htpasswd -b /etc/nginx/.htpasswd ${BASIC_USER} ${BASIC_PASSWORD}
+    sed -i "s@# auth_basic .*;@auth_basic \"Restricted Area\";@g" "${config_file}"
+    sed -i "s@# auth_basic_user_file .*;@auth_basic_user_file /etc/nginx/.htpasswd;@g" "${config_file}"
+  else
+    sed -i "s@auth_basic .*;@# auth_basic \"Restricted Area\";@g" "${config_file}"
+    sed -i "s@auth_basic_user_file .*;@# auth_basic_user_file /etc/nginx/.htpasswd;@g" "${config_file}"
+  fi
 }
 
 # helm-charts mount
@@ -70,12 +79,6 @@ function config_https() {
   cp -f /etc/nginx/sites-enabled/https_server.conf "${config_file}"
 
   config_nginx "${config_file}"
-
-  if [ -z "${HTTPS_PORT}" ]; then
-    HTTPS_PORT=443
-  fi
-
-  sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
@@ -147,10 +150,9 @@ function main() {
     exit 0
   fi
 
+  config_http
   if [ -f "/etc/nginx/sites-enabled/https_server.conf" ]; then
     config_https
-  else
-    config_http
   fi
   config_components
 
