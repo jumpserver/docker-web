@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 
+BASIC_AUTH_USER=${BASIC_AUTH_USER:-admin}
+
 function config_nginx() {
   config_file=$1
   if [ ! -f "${config_file}" ]; then
@@ -35,7 +37,7 @@ function config_nginx() {
   fi
 
   if [ -n "${BASIC_AUTH_PASSWORD}" ] ; then
-    htpasswd -b /etc/nginx/.htpasswd admin ${BASIC_AUTH_PASSWORD}
+    htpasswd -bc /etc/nginx/.htpasswd ${BASIC_AUTH_USER} ${BASIC_AUTH_PASSWORD}
     sed -i "s@# auth_basic .*;@auth_basic \"Restricted Area\";@g" "${config_file}"
     sed -i "s@# auth_basic_user_file .*;@auth_basic_user_file /etc/nginx/.htpasswd;@g" "${config_file}"
   else
