@@ -12,7 +12,9 @@ ARG TOOLS="                           \
         ca-certificates               \
         wget                          \
         curl                          \
+        apache2-utils                 \
         vim                           \
+        htpasswd                      \
         "
 
 RUN set -ex \
