@@ -34,8 +34,8 @@ function config_nginx() {
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
   fi
 
-  if [ -n "${BASIC_PASSWORD}" ] && [ -n "${BASIC_USER}" ]; then
-    htpasswd -b /etc/nginx/.htpasswd ${BASIC_USER} ${BASIC_PASSWORD}
+  if [ -n "${BASIC_AUTH_PASSWORD}" ] ; then
+    htpasswd -b /etc/nginx/.htpasswd admin ${BASIC_AUTH_PASSWORD}
     sed -i "s@# auth_basic .*;@auth_basic \"Restricted Area\";@g" "${config_file}"
     sed -i "s@# auth_basic_user_file .*;@auth_basic_user_file /etc/nginx/.htpasswd;@g" "${config_file}"
   else
