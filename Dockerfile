@@ -14,7 +14,6 @@ ARG TOOLS="                           \
         curl                          \
         apache2-utils                 \
         vim                           \
-        htpasswd                      \
         "
 
 RUN set -ex \
