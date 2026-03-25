@@ -13,6 +13,7 @@ ARG TOOLS="                           \
         wget                          \
         curl                          \
         vim                           \
+        logrotate                     \
         "
 
 RUN set -ex \
