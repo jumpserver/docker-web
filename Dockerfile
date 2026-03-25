@@ -14,6 +14,7 @@ ARG TOOLS="                           \
         curl                          \
         apache2-utils                 \
         vim                           \
+        logrotate                     \
         "
 
 RUN set -ex \
