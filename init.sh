@@ -146,6 +146,21 @@ function config_gzip() {
   fi
 }
 
+function config_ws_listen_port() {
+  core_config_file=/etc/nginx/includes/core.conf
+  if [ ! -f "${core_config_file}" ]; then
+    return
+  fi
+
+  ws_listen_port=${WS_LISTEN_PORT:-8080}
+  if [[ ! "${ws_listen_port}" =~ ^[0-9]+$ ]]; then
+    echo "Invalid WS_LISTEN_PORT: ${WS_LISTEN_PORT}, fallback to 8080"
+    ws_listen_port=8080
+  fi
+
+  sed -i "s@core:WS_LISTEN_PORT;@core:${ws_listen_port};@g" "${core_config_file}"
+}
+
 function main() {
   if [ -f "/etc/nginx/sites-enabled/jms.conf" ]; then
     config_helm
@@ -157,6 +172,7 @@ function main() {
     config_https
   fi
   config_components
+  config_ws_listen_port
 
   if [ -f "/etc/init.d/cron" ]; then
     /etc/init.d/cron start
