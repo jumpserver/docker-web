@@ -25,6 +25,7 @@ RUN set -ex \
     && apt-get clean \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/download/${CHECK_VERSION}/check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
     && tar -xf check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
+    && rm -f /etc/nginx/conf.d/default.conf \
     && mv check /usr/local/bin/ \
     && chown root:root /usr/local/bin/check \
     && chmod 755 /usr/local/bin/check \
