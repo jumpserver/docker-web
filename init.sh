@@ -16,9 +16,6 @@ function config_nginx() {
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:80;@listen \[::\]:80;@g" "${config_file}"
-    if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-      sed -i "s@# listen \[::\]:51980;@listen \[::\]:51980;@g" /etc/nginx/conf.d/default.conf
-    fi
   fi
 
   if [ -n "${SERVER_NAME}" ]; then
@@ -63,15 +60,15 @@ function config_helm() {
 
 # Installer mount
 # https://github.com/jumpserver/installer/blob/dev/compose/docker-compose-lb.yml#L14
-function config_http() {
-  config_file=/etc/nginx/conf.d/http_server.conf
-  if [ -f "${config_file}" ]; then
-    rm -f "${config_file}"
-  fi
-  cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
+# function config_http() {
+#   config_file=/etc/nginx/conf.d/http_server.conf
+#   if [ -f "${config_file}" ]; then
+#     rm -f "${config_file}"
+#   fi
+#   cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
 
-  config_nginx "${config_file}"
-}
+#   config_nginx "${config_file}"
+# }
 
 function config_https() {
   config_file=/etc/nginx/conf.d/https_server.conf
@@ -152,7 +149,6 @@ function main() {
     exit 0
   fi
 
-  config_http
   if [ -f "/etc/nginx/sites-enabled/https_server.conf" ]; then
     config_https
   fi
