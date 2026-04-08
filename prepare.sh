@@ -46,4 +46,9 @@ for arch in x64 arm64; do
     wget https://downloads.mongodb.com/compass/mongosh-${MONGOSH_VERSION}-linux-${arch}.tgz
 done
 
+for i in $(ls JumpServer*);do
+   to=${i/JumpServer/}
+   ln -s ${i} ${to}
+done
+
 cp "${PROJECT_DIR}"/versions.txt ${DOWNLOAD_DIR}

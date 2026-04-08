@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'pr*'
+      - 'osm'
     paths:
       - 'versions.txt'
       - 'prepare.sh'
