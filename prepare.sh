@@ -37,6 +37,7 @@ wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VER
 clients=(
     "JumpServerClient_${CLIENT_VERSION}_x64-setup.exe"
     "JumpServerClient_${CLIENT_VERSION}_aarch64.dmg"
+    "JumpServerClient_${CLIENT_VERSION}_x64.dmg"
 )
 for client in "${clients[@]}"; do
     wget "https://github.com/jumpserver/clients/releases/download/v${CLIENT_VERSION}/${client}"
