@@ -34,10 +34,10 @@ cd ${DOWNLOAD_DIR}/public || exit 1
 # wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.exe
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
-CLIENT_NAME="OSMClient"
+CLIENT_NAME="OSM"
 clients=(
-    "${CLIENT_NAME}_${CLIENT_VERSION}_x64-setup.exe"
-    "${CLIENT_NAME}_${CLIENT_VERSION}_aarch64.dmg"
+    "${CLIENT_NAME}Client_${CLIENT_VERSION}_x64-setup.exe"
+    "${CLIENT_NAME}Client_${CLIENT_VERSION}_aarch64.dmg"
 )
 for client in "${clients[@]}"; do
     wget "https://github.com/jumpserver/clients/releases/download/v${CLIENT_VERSION}/${client}"
@@ -47,8 +47,8 @@ for arch in x64 arm64; do
     wget https://downloads.mongodb.com/compass/mongosh-${MONGOSH_VERSION}-linux-${arch}.tgz
 done
 
-for i in $(ls JumpServer*);do
-   to=${i/JumpServer/}
+for i in $(ls ${CLIENT_NAME}*);do
+   to=${i/${CLIENT_NAME}/}
    ln -s ${i} ${to}
 done
 
