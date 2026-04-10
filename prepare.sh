@@ -34,7 +34,6 @@ cd ${DOWNLOAD_DIR}/public || exit 1
 # wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.exe
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
-CLIENT_NAME="OSM"
 clients=(
     "${CLIENT_NAME}Client_${CLIENT_VERSION}_x64-setup.exe"
     "${CLIENT_NAME}Client_${CLIENT_VERSION}_aarch64.dmg"
