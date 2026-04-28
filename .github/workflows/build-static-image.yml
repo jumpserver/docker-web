@@ -3,12 +3,12 @@ name: Build and Push Base Image
 on:
   push:
     branches:
-      - 'pr*'
-      - 'osm'
+      - "pr*"
+      - "osm"
     paths:
-      - 'versions.txt'
-      - 'prepare.sh'
-      - 'Dockerfile-static'
+      - "versions.txt"
+      - "prepare.sh"
+      - "Dockerfile-static"
 
 jobs:
   build-and-push:
@@ -45,6 +45,7 @@ jobs:
           push: true
           tags: jumpserver/web-static:${{ env.IMAGE_TAG }}
           file: Dockerfile-static
+          context: .
 
       - name: Get current branch name
         id: get_branch
