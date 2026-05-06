@@ -1,5 +1,5 @@
 ARG VERSION=dev
-FROM jumpserver/web-static:20260428_030152 AS static
+FROM jumpserver/web-static:20260506_112020 AS static
 FROM jumpserver/web:${VERSION}-ce
 
 COPY --from=static /opt/ /opt/
