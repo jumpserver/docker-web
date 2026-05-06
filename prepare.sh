@@ -17,6 +17,13 @@ wget ${DOWNLOAD_URL}/public/glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz
 tar -xf glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz -C /opt/player --strip-components 1
 rm -f glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz
 
+if [ -d "/opt/player/lib/angular/1.7.8" ]; then
+    cd /opt/player/lib/angular/1.7.8 || exit 1
+    for f in angular.min.js angular.js; do
+        wget -q "https://code.angularjs.org/1.7.9/${f}" -O "${f}" || true
+    done
+fi
+
 DOWNLOAD_DIR=/opt/download
 mkdir -p ${DOWNLOAD_DIR}/applets
 cd ${DOWNLOAD_DIR}/applets || exit 1
