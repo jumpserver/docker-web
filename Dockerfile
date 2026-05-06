@@ -24,7 +24,8 @@ RUN set -ex \
     && apt-get clean \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
     && dpkg -i check_linux_${TARGETARCH}.deb \
-    && rm -f check_linux_${TARGETARCH}.deb
+    && rm -f check_linux_${TARGETARCH}.deb \
+    && rm -f /etc/nginx/conf.d/default.conf
 
 WORKDIR /opt
 
