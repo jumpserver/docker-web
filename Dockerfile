@@ -5,15 +5,12 @@ FROM jumpserver/luna:${VERSION} AS luna
 FROM nginx:1.29-trixie
 ARG TARGETARCH
 
-ARG CHECK_VERSION=v1.0.5
 ARG APT_MIRROR=http://deb.debian.org
 
 ARG TOOLS="                           \
         ca-certificates               \
         wget                          \
         curl                          \
-        apache2-utils                 \
-        vim                           \
         logrotate                     \
         "
 
@@ -21,15 +18,13 @@ RUN set -ex \
     && rm -f /etc/apt/apt.conf.d/docker-clean \
     && sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list.d/debian.sources\
     && apt-get update > /dev/null \
+    && apt-get -y upgrade \
     && apt-get -y install --no-install-recommends ${TOOLS} \
+    && apt-get -y autoremove \
     && apt-get clean \
-    && wget https://github.com/jumpserver-dev/healthcheck/releases/download/${CHECK_VERSION}/check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
-    && tar -xf check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz \
-    && rm -f /etc/nginx/conf.d/default.conf \
-    && mv check /usr/local/bin/ \
-    && chown root:root /usr/local/bin/check \
-    && chmod 755 /usr/local/bin/check \
-    && rm -f check-${CHECK_VERSION}-linux-${TARGETARCH}.tar.gz
+    && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
+    && dpkg -i check_linux_${TARGETARCH}.deb \
+    && rm -f check_linux_${TARGETARCH}.deb
 
 WORKDIR /opt
 

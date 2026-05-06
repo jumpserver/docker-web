@@ -32,15 +32,6 @@ function config_nginx() {
   else
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
   fi
-
-  if [[ -n "${BASIC_AUTH_PASSWORD}" ]] ; then
-    htpasswd -bc /etc/nginx/.htpasswd ${BASIC_AUTH_USER} ${BASIC_AUTH_PASSWORD}
-    sed -i "s@# auth_basic @auth_basic @g" "${config_file}"
-    sed -i "s@# auth_basic_user_file @auth_basic_user_file @g" "${config_file}"
-  else
-    sed -i "s@^\([[:space:]]*\)auth_basic @\1# auth_basic @g" "${config_file}"
-    sed -i "s@^\([[:space:]]*\)auth_basic_user_file @\1# auth_basic_user_file @g" "${config_file}"
-  fi
 }
 
 # helm-charts mount
