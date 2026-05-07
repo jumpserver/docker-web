@@ -10,7 +10,6 @@ ARG APT_MIRROR=http://deb.debian.org
 ARG TOOLS="                           \
         ca-certificates               \
         wget                          \
-        curl                          \
         logrotate                     \
         "
 
@@ -20,10 +19,16 @@ RUN set -ex \
     && apt-get update > /dev/null \
     && apt-get -y upgrade \
     && apt-get -y install --no-install-recommends ${TOOLS} \
-    && apt-get -y autoremove \
-    && apt-get clean \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
     && dpkg -i check_linux_${TARGETARCH}.deb \
+    && apt-get purge -y wget \
+        nginx-module-xslt \
+        nginx-module-njs \
+        libxml2 \
+        libxslt1.1 \
+        libgd3 \
+    && apt-get -y autoremove \
+    && apt-get clean \
     && rm -f check_linux_${TARGETARCH}.deb \
     && rm -f /etc/nginx/conf.d/default.conf
 
