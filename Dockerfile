@@ -22,7 +22,7 @@ RUN set -ex \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
     && dpkg -i check_linux_${TARGETARCH}.deb \
     && apt-get purge -y wget \
-        libgnutls30t64 \
+        curl \
         nginx-module-xslt \
         nginx-module-njs \
         libxml2 \
