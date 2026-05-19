@@ -17,6 +17,10 @@ wget ${DOWNLOAD_URL}/public/glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz
 tar -xf glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz -C /opt/player --strip-components 1
 rm -f glyptodon-enterprise-player-${PLAY_VERSION}.tar.gz
 
+if [ -f "/opt/player/lib/angular/1.7.8/package.json" ]; then
+    rm /opt/player/lib/angular/1.7.8/package.json || exit 1
+fi
+
 DOWNLOAD_DIR=/opt/download
 mkdir -p ${DOWNLOAD_DIR}/applets
 cd ${DOWNLOAD_DIR}/applets || exit 1
