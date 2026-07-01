@@ -3,3 +3,4 @@ selenium==4.4.0
 pywin32==304
 PyYAML==6.0
 cffi==1.16.0
+defusedxml==0.7.1

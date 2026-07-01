@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 
+BASIC_AUTH_USER=${BASIC_AUTH_USER:-admin}
+
 function config_nginx() {
   config_file=$1
   if [ ! -f "${config_file}" ]; then
@@ -8,25 +10,12 @@ function config_nginx() {
     exit 1
   fi
 
-  if [ -z "${HTTP_PORT}" ]; then
-    HTTP_PORT=80
-  fi
   if [ -z "${USE_LB}" ]; then
     USE_LB=1
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:80;@listen \[::\]:80;@g" "${config_file}"
-    if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-      sed -i "s@# listen \[::\]:51980;@listen \[::\]:51980;@g" /etc/nginx/conf.d/default.conf
-    fi
-  fi
-
-  if [ "${HTTP_PORT}" != "80" ]; then
-    sed -i "s@listen 80;@listen ${HTTP_PORT};@g" "${config_file}"
-    if [ "${USE_IPV6}" == "1" ]; then
-      sed -i "s@listen \[::\]:80;@listen \[::\]:${HTTP_PORT};@g" "${config_file}"
-    fi
   fi
 
   if [ -n "${SERVER_NAME}" ]; then
@@ -62,15 +51,15 @@ function config_helm() {
 
 # Installer mount
 # https://github.com/jumpserver/installer/blob/dev/compose/docker-compose-lb.yml#L14
-function config_http() {
-  config_file=/etc/nginx/conf.d/http_server.conf
-  if [ -f "${config_file}" ]; then
-    rm -f "${config_file}"
-  fi
-  cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
+# function config_http() {
+#   config_file=/etc/nginx/conf.d/http_server.conf
+#   if [ -f "${config_file}" ]; then
+#     rm -f "${config_file}"
+#   fi
+#   cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
 
-  config_nginx "${config_file}"
-}
+#   config_nginx "${config_file}"
+# }
 
 function config_https() {
   config_file=/etc/nginx/conf.d/https_server.conf
@@ -81,22 +70,8 @@ function config_https() {
 
   config_nginx "${config_file}"
 
-  if [ -z "${HTTPS_PORT}" ]; then
-    HTTPS_PORT=443
-  fi
-
-  sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
-
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
-  fi
-
-  if [ "${HTTPS_PORT}" != "443" ]; then
-    sed -i "s@listen 443@listen ${HTTPS_PORT}@g" "${config_file}"
-    sed -i "s@https://\$server_name\$request_uri;@https://\$server_name:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
-    if [ "${USE_IPV6}" == "1" ]; then
-      sed -i "s@listen \[::\]:443@listen \[::\]:${HTTPS_PORT}@g" "${config_file}"
-    fi
   fi
 
   if [ -n "${SSL_CERTIFICATE}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE}" ]; then
@@ -167,8 +142,6 @@ function main() {
 
   if [ -f "/etc/nginx/sites-enabled/https_server.conf" ]; then
     config_https
-  else
-    config_http
   fi
   config_components
 
