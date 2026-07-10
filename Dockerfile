@@ -40,5 +40,6 @@ COPY --from=luna /opt/luna /opt/luna
 COPY versions.txt /opt/download/versions.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
-COPY http_server.conf /etc/nginx/conf.d/http_server.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
+COPY http_server.conf /etc/nginx/sites-enabled/http_server.conf
 COPY init.sh /docker-entrypoint.d/40-init-config.sh
