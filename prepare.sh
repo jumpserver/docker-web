@@ -34,8 +34,6 @@ wget ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
 mkdir -p ${DOWNLOAD_DIR}/public
 cd ${DOWNLOAD_DIR}/public || exit 1
 # wget ${DOWNLOAD_URL}/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg
-# wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.dmg
-# wget https://github.com/jumpserver/VideoPlayer/releases/download/v${VIDEO_PLAYER_VERSION}/JumpServerVideoPlayer-${VIDEO_PLAYER_VERSION}.exe
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
 clients=(

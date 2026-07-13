@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: "0 1 * * *"
   push:
     branches:
       - dev
@@ -40,7 +40,7 @@ jobs:
             echo "Branch does not exist, will create new one."
             echo "branch_exists=false" >> $GITHUB_ENV
           fi
-          
+
       - name: Checkout existing branch or create new one
         run: |
           if [ "$branch_exists" == "true" ]; then
@@ -53,12 +53,6 @@ jobs:
         run: |
           version=$(curl -s https://api.github.com/repos/jumpserver/clients/releases/latest | jq -r .tag_name)
           sed -i "s/Client_VERSION=.*/Client_VERSION=${version}/g" versions.txt
-
-      - name: Check player version
-        run: |
-          version=$(curl -s https://api.github.com/repos/jumpserver/VideoPlayer/releases/latest | jq -r .tag_name | sed 's/v//')
-          echo "version=${version}" >> $GITHUB_ENV
-          sed -i "s/VIDEO_PLAYER_VERSION=.*/VIDEO_PLAYER_VERSION=${version}/g" versions.txt
 
       - name: Check tinker version
         run: |
