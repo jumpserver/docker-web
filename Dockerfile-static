@@ -3,6 +3,7 @@ ARG TARGETARCH
 
 WORKDIR /tmp
 COPY . .
+
 RUN set -ex \
     && apk add --no-cache bash \
     && bash ./prepare.sh
