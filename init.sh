@@ -113,6 +113,12 @@ function config_components() {
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
+  if [ "${KOTL_ENABLED}" == "1" ]; then
+    safe_move /etc/nginx/includes/kotl.conf.disabled /etc/nginx/includes/kotl.conf
+  else
+    safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
+  fi
+
   if [ "${FACELIVE_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/facelive.conf /etc/nginx/includes/facelive.conf.disabled
   fi
