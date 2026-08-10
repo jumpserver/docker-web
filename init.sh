@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+https_port=${HTTPS_PORT:-443}
+
 
 function config_nginx() {
   config_file=$1
@@ -72,7 +74,12 @@ function config_https() {
   config_nginx "${config_file}"
 
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
-  sed -i 's@https://$server_name$request_uri;@https://$host$request_uri;@g' "${config_file}"
+  if [ "${HTTPS_PORT}" != "443" ]; then
+    # Old 
+    sed -i "s@https://\$server_name\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
+    # New 
+    sed -i "s@https://\$host\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
+  fi
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
