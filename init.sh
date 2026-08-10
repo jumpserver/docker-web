@@ -72,6 +72,7 @@ function config_https() {
   config_nginx "${config_file}"
 
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
+  sed -i 's@https://$server_name$request_uri;@https://$host$request_uri;@g' "${config_file}"
 
   if [ "${USE_IPV6}" == "1" ]; then
     sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
@@ -110,6 +111,12 @@ function config_components() {
 
   if [ "${CHEN_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
+  fi
+
+  if [ "${KOTL_ENABLED}" == "1" ]; then
+    safe_move /etc/nginx/includes/kotl.conf.disabled /etc/nginx/includes/kotl.conf
+  else
+    safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
   fi
 
   if [ "${FACELIVE_ENABLED}" == "0" ]; then
