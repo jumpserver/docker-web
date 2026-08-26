@@ -124,10 +124,10 @@ function config_components() {
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${KOTL_ENABLED}" == "1" ]; then
-    safe_move /etc/nginx/includes/kotl.conf.disabled /etc/nginx/includes/kotl.conf
+  if [ "${JDMC_ENABLED}" == "1" ]; then
+    safe_move /etc/nginx/includes/jdmc.conf.disabled /etc/nginx/includes/jdmc.conf
   else
-    safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
+    safe_move /etc/nginx/includes/jdmc.conf /etc/nginx/includes/jdmc.conf.disabled
   fi
 
   if [ "${FACELIVE_ENABLED}" == "0" ]; then
