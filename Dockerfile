@@ -42,4 +42,5 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY http_server.conf /etc/nginx/sites-enabled/http_server.conf
+COPY https_server.conf /etc/nginx/sites-enabled/https_server.conf
 COPY init.sh /docker-entrypoint.d/40-init-config.sh
