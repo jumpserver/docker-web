@@ -124,7 +124,7 @@ function config_components() {
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${JDMC_ENABLED}" == "1" ]; then
+  if [ "${USE_XPACK}" == "1" ]; then
     safe_move /etc/nginx/includes/jdmc.conf.disabled /etc/nginx/includes/jdmc.conf
   else
     safe_move /etc/nginx/includes/jdmc.conf /etc/nginx/includes/jdmc.conf.disabled
