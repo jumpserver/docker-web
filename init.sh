@@ -64,6 +64,32 @@ function config_http() {
   config_nginx "${config_file}"
 }
 
+function config_certificate() {
+  cert_dir=/etc/nginx/cert
+  example_dir=/etc/nginx/example
+  cert_name=${SSL_CERTIFICATE:-server.crt}
+  key_name=${SSL_CERTIFICATE_KEY:-server.key}
+  cert_file=${cert_dir}/${cert_name}
+  key_file=${cert_dir}/${key_name}
+
+  mkdir -p "${cert_dir}"
+
+  if [[ ! -f "${cert_file}" && ! -f "${key_file}" ]]; then
+    if [[ -n "${SSL_CERTIFICATE}" || -n "${SSL_CERTIFICATE_KEY}" ]]; then
+      echo "SSL certificate and private key not found: ${cert_file}, ${key_file}"
+      exit 1
+    fi
+
+    cp -f "${example_dir}/example.crt" "${cert_file}"
+    cp -f "${example_dir}/example.key" "${key_file}"
+  elif [[ ! -f "${cert_file}" || ! -f "${key_file}" ]]; then
+    echo "SSL certificate and private key must both exist: ${cert_file}, ${key_file}"
+    exit 1
+  fi
+
+  chmod 600 "${cert_file}" "${key_file}"
+}
+
 function config_https() {
   config_file=/etc/nginx/conf.d/https_server.conf
   if [ -f "${config_file}" ]; then
@@ -71,6 +97,7 @@ function config_https() {
   fi
   cp -f /etc/nginx/sites-enabled/https_server.conf "${config_file}"
 
+  config_certificate
   config_nginx "${config_file}"
 
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
@@ -89,12 +116,8 @@ function config_https() {
     sed -i "s@# listen \[::\]:443 ssl;@listen [::]:${HTTPS_PORT} ssl;@g" "${config_file}"
   fi
 
-  if [ -n "${SSL_CERTIFICATE}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE}" ]; then
-    sed -i "s@ssl_certificate .*;@ssl_certificate cert/${SSL_CERTIFICATE};@g" "${config_file}"
-  fi
-  if [ -n "${SSL_CERTIFICATE_KEY}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE_KEY}" ]; then
-    sed -i "s@ssl_certificate_key .*;@ssl_certificate_key cert/${SSL_CERTIFICATE_KEY};@g" "${config_file}"
-  fi
+  sed -i "s@ssl_certificate .*;@ssl_certificate cert/${cert_name};@g" "${config_file}"
+  sed -i "s@ssl_certificate_key .*;@ssl_certificate_key cert/${key_name};@g" "${config_file}"
   if [ -n "${CLIENT_MAX_BODY_SIZE}" ]; then
     sed -i "s@client_max_body_size .*;@client_max_body_size ${CLIENT_MAX_BODY_SIZE};@g" "${config_file}"
   fi
@@ -116,10 +139,6 @@ function config_components() {
     safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
   fi
 
-  if [ "${LION_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/lion.conf /etc/nginx/includes/lion.conf.disabled
-  fi
-
   if [ "${CHEN_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
@@ -130,16 +149,8 @@ function config_components() {
     safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
   fi
 
-  if [ "${FACELIVE_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/facelive.conf /etc/nginx/includes/facelive.conf.disabled
-  fi
-
   if [[ "${USE_XPACK}" == "1" && "${RAZOR_ENABLED}" != "0" ]]; then
     safe_move /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
-  fi
-
-  if [[ "${USE_XPACK}" == "1" && "${FACELIVE_ENABLED}" == "1" ]]; then
-    safe_move /etc/nginx/includes/facelive.conf.disabled /etc/nginx/includes/facelive.conf
   fi
 }
 
