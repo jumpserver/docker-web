@@ -67,19 +67,28 @@ function config_http() {
 function config_certificate() {
   cert_dir=/etc/nginx/cert
   example_dir=/etc/nginx/example
-  cert_name=${SSL_CERTIFICATE:-server.crt}
-  key_name=${SSL_CERTIFICATE_KEY:-server.key}
+  default_cert_name=server.crt
+  default_key_name=server.key
+  cert_name=${SSL_CERTIFICATE:-${default_cert_name}}
+  key_name=${SSL_CERTIFICATE_KEY:-${default_key_name}}
   cert_file=${cert_dir}/${cert_name}
   key_file=${cert_dir}/${key_name}
 
   mkdir -p "${cert_dir}"
 
-  if [[ ! -f "${cert_file}" && ! -f "${key_file}" ]]; then
+  if [[ ! -f "${cert_file}" || ! -f "${key_file}" ]]; then
     if [[ -n "${SSL_CERTIFICATE}" || -n "${SSL_CERTIFICATE_KEY}" ]]; then
-      echo "SSL certificate and private key not found: ${cert_file}, ${key_file}"
-      exit 1
+      echo "Warning: SSL certificate or private key not found: ${cert_file}, ${key_file}"
+      echo "Falling back to the default certificate pair: ${default_cert_name}, ${default_key_name}"
     fi
 
+    cert_name=${default_cert_name}
+    key_name=${default_key_name}
+    cert_file=${cert_dir}/${cert_name}
+    key_file=${cert_dir}/${key_name}
+  fi
+
+  if [[ ! -f "${cert_file}" && ! -f "${key_file}" ]]; then
     cp -f "${example_dir}/example.crt" "${cert_file}"
     cp -f "${example_dir}/example.key" "${key_file}"
   elif [[ ! -f "${cert_file}" || ! -f "${key_file}" ]]; then
