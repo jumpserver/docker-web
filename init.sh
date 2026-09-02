@@ -135,6 +135,12 @@ function config_components() {
     safe_move /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
   fi
 
+  if [ "${CHAT_AI_SERVICE_ENABLED}" == "1" ]; then
+    safe_move /etc/nginx/includes/chat_ai.conf.disabled /etc/nginx/includes/chat_ai.conf
+  else
+    safe_move /etc/nginx/includes/chat_ai.conf /etc/nginx/includes/chat_ai.conf.disabled
+  fi
+
   if [ "${KOKO_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
   fi
@@ -143,10 +149,10 @@ function config_components() {
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${KOTL_ENABLED}" == "1" ]; then
-    safe_move /etc/nginx/includes/kotl.conf.disabled /etc/nginx/includes/kotl.conf
+  if [ "${USE_XPACK}" == "1" ]; then
+    safe_move /etc/nginx/includes/jdmc.conf.disabled /etc/nginx/includes/jdmc.conf
   else
-    safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
+    safe_move /etc/nginx/includes/jdmc.conf /etc/nginx/includes/jdmc.conf.disabled
   fi
 
   if [[ "${USE_XPACK}" == "1" && "${RAZOR_ENABLED}" != "0" ]]; then
