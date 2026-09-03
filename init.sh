@@ -1,17 +1,10 @@
 #!/bin/bash
 #
-HTTPS_PORT=${HTTPS_PORT:-443}
-
-
 function config_nginx() {
   config_file=$1
   if [ ! -f "${config_file}" ]; then
     echo "config file ${config_file} not found"
     exit 1
-  fi
-
-  if [ -z "${USE_LB}" ]; then
-    USE_LB=1
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
@@ -30,10 +23,13 @@ function config_nginx() {
     sed -i "s@client_max_body_size .*;@client_max_body_size ${CLIENT_MAX_BODY_SIZE};@g" /etc/nginx/conf.d/*.conf
   fi
 
-  if [ "${USE_LB}" == "1" ]; then
-    sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $remote_addr;@g' "${config_file}"
-  else
+  # Only an explicit USE_LB=0 means there is a trusted proxy in front of us.
+  # Otherwise this server is the trust boundary and must discard client-supplied
+  # X-Forwarded-For values.
+  if [ "${USE_LB:-1}" == "0" ]; then
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
+  else
+    sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $remote_addr;@g' "${config_file}"
   fi
 }
 
@@ -50,18 +46,6 @@ function config_helm() {
   if [ -f "/etc/init.d/cron" ]; then
     /etc/init.d/cron start
   fi
-}
-
-# Installer mount
-# https://github.com/jumpserver/installer/blob/dev/compose/docker-compose-lb.yml#L14
-function config_http() {
-  config_file=/etc/nginx/conf.d/http_server.conf
-  if [ -f "${config_file}" ]; then
-    rm -f "${config_file}"
-  fi
-  cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
-
-  config_nginx "${config_file}"
 }
 
 function config_certificate() {
@@ -110,19 +94,17 @@ function config_https() {
   config_nginx "${config_file}"
 
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
-  if [ "${HTTPS_PORT}" != "443" ]; then
-    # Old 
-    sed -i "s@https://\$server_name\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
-    # New 
-    sed -i "s@https://\$host\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
-  fi
-
-  if [ "${HTTPS_PORT}" != "443" ]; then
-    sed -i "s@listen 443 ssl;@listen ${HTTPS_PORT} ssl;@g" "${config_file}"
+  if [[ -n "${HTTPS_PORT}" && "${HTTPS_PORT}" != "0" ]]; then
+    if [ "${HTTPS_PORT}" == "443" ]; then
+      redirect_url='https://$host$request_uri'
+    else
+      redirect_url="https://\$host:${HTTPS_PORT}\$request_uri"
+    fi
+    sed -i "s@  # HTTPS_REDIRECT@  return 307 ${redirect_url};@g" "${config_file}"
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
-    sed -i "s@# listen \[::\]:443 ssl;@listen [::]:${HTTPS_PORT} ssl;@g" "${config_file}"
+    sed -i "s@# listen \[::\]:443 ssl;@listen [::]:443 ssl;@g" "${config_file}"
   fi
 
   sed -i "s@ssl_certificate .*;@ssl_certificate cert/${cert_name};@g" "${config_file}"
@@ -187,11 +169,7 @@ function main() {
     exit 0
   fi
 
-  if [ -f "/etc/nginx/sites-enabled/https_server.conf" ]; then
-    config_https
-  else
-    config_http
-  fi
+  config_https
   config_components
 
   if [ -f "/etc/init.d/cron" ]; then
