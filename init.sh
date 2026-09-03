@@ -154,6 +154,9 @@ function config_components() {
 function copy_versions_to_core() {
   if [[ -f "/opt/download/versions.txt" && -d "/opt/jumpserver/data/"  ]]; then
     cp -f /opt/download/versions.txt /opt/jumpserver/data/version.txt
+    if [[ -f "/opt/download/client-version.txt" ]]; then
+      cat /opt/download/client-version.txt >> /opt/jumpserver/data/version.txt
+    fi
   fi
 }
 

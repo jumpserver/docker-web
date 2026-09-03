@@ -38,6 +38,7 @@ WORKDIR /opt
 COPY --from=lina /opt/lina /opt/lina
 COPY --from=luna /opt/luna /opt/luna
 COPY versions.txt /opt/download/versions.txt
+COPY client-version.txt /opt/download/client-version.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
 COPY example /etc/nginx/example

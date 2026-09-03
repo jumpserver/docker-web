@@ -2,7 +2,7 @@ FROM alpine:3.20
 ARG TARGETARCH
 
 WORKDIR /tmp
-COPY . .
+COPY prepare.sh versions.txt ./
 
 RUN set -ex \
     && apk add --no-cache bash \

@@ -1,0 +1,3 @@
+# Client installers are released independently and are not bundled in web-static.
+CLIENT_VERSION=5.0.0-beta4
+CLIENT_NAME=JumpServer

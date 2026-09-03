@@ -1,4 +1,6 @@
 on:
+  repository_dispatch:
+    types: [client-released]
   schedule:
     - cron: "0 1 * * *"
   push:
@@ -44,15 +46,21 @@ jobs:
       - name: Checkout existing branch or create new one
         run: |
           if [ "$branch_exists" == "true" ]; then
-            git checkout pr@${{ matrix.branch }}@upgrade_client
+            git checkout -B pr@${{ matrix.branch }}@upgrade_client origin/${{ matrix.branch }}
           else
             git checkout -b pr@${{ matrix.branch }}@upgrade_client
           fi
 
       - name: Check client version
+        env:
+          RELEASED_CLIENT_VERSION: ${{ github.event.client_payload.version }}
         run: |
-          version=$(curl -s https://api.github.com/repos/jumpserver/clients/releases/latest | jq -r .tag_name)
-          sed -i "s/Client_VERSION=.*/Client_VERSION=${version}/g" versions.txt
+          if [ -n "$RELEASED_CLIENT_VERSION" ]; then
+            version="$RELEASED_CLIENT_VERSION"
+          else
+            version=$(curl --fail --silent --show-error 'https://api.github.com/repos/jumpserver/luna/releases?per_page=1' | jq -er '.[0].tag_name | ltrimstr("v")')
+          fi
+          sed -i "s/CLIENT_VERSION=.*/CLIENT_VERSION=${version}/g" client-version.txt
 
       - name: Check tinker version
         run: |
@@ -72,4 +80,8 @@ jobs:
         run: |
           git add .
           git commit -m "Update pkg versions"
-          git push origin pr@${{ matrix.branch }}@upgrade_client
+          if [ "$branch_exists" == "true" ]; then
+            git push --force-with-lease origin pr@${{ matrix.branch }}@upgrade_client
+          else
+            git push origin pr@${{ matrix.branch }}@upgrade_client
+          fi
