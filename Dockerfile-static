@@ -2,8 +2,8 @@ FROM alpine:3.20
 ARG TARGETARCH
 
 WORKDIR /tmp
-COPY prepare.sh versions.txt ./
+COPY static.sh versions.txt ./
 
 RUN set -ex \
     && apk add --no-cache bash \
-    && bash ./prepare.sh
+    && bash ./static.sh

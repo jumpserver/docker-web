@@ -58,9 +58,20 @@ jobs:
           if [ -n "$RELEASED_CLIENT_VERSION" ]; then
             version="$RELEASED_CLIENT_VERSION"
           else
-            version=$(curl --fail --silent --show-error 'https://api.github.com/repos/jumpserver/luna/releases?per_page=1' | jq -er '.[0].tag_name | ltrimstr("v")')
+            version=$(curl --fail --silent --show-error 'https://api.github.com/repos/jumpserver/luna/releases?per_page=100' | jq -r '
+              first(
+                .[]
+                | select(any(.assets[]?; .name | test(" Setup\\.exe$|-(arm64|x64)\\.dmg$")))
+                | .tag_name
+              ) // empty
+            ')
           fi
-          sed -i "s/CLIENT_VERSION=.*/CLIENT_VERSION=${version}/g" client-version.txt
+          version="${version#v}"
+          if [ -n "$version" ]; then
+            sed -i "s/CLIENT_VERSION=.*/CLIENT_VERSION=${version}/g" client-version.txt
+          else
+            echo "No published Luna release with desktop client assets found"
+          fi
 
       - name: Check tinker version
         run: |

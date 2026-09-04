@@ -21,8 +21,7 @@ RUN set -ex \
     && apt-get -y install --no-install-recommends ${TOOLS} \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
     && dpkg -i check_linux_${TARGETARCH}.deb \
-    && apt-get purge -y wget \
-        curl \
+    && apt-get purge -y curl \
         nginx-module-xslt \
         nginx-module-njs \
         libxml2 \

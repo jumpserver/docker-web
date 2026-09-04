@@ -3,3 +3,8 @@ FROM jumpserver/web-static:20260819_065947 AS static
 FROM jumpserver/web:${VERSION}-ce
 
 COPY --from=static /opt/ /opt/
+COPY client.sh client-version.txt /tmp/
+
+RUN set -ex \
+    && /tmp/client.sh \
+    && rm -f /tmp/client.sh /tmp/client-version.txt
