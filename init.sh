@@ -126,10 +126,10 @@ function config_components() {
     safe_move /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
   fi
 
-  if [ "${CHAT_AI_SERVICE_ENABLED}" == "1" ]; then
-    safe_move /etc/nginx/includes/chat_ai.conf.disabled /etc/nginx/includes/chat_ai.conf
+  if [ "${KAEL_ENABLED}" == "0" ]; then
+    safe_move /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
   else
-    safe_move /etc/nginx/includes/chat_ai.conf /etc/nginx/includes/chat_ai.conf.disabled
+    safe_move /etc/nginx/includes/kael.conf.disabled /etc/nginx/includes/kael.conf
   fi
 
   if [ "${KOKO_ENABLED}" == "0" ]; then
