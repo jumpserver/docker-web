@@ -19,7 +19,7 @@ macos_arm64_file="${CLIENT_NAME}Client_${CLIENT_VERSION}_aarch64.dmg"
 
 wget --https-only \
     --output-document="${windows_file}" \
-    "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}%20Setup.exe"
+    "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}.Setup.exe"
 wget --https-only \
     --output-document="${macos_arm64_file}" \
     "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}-arm64.dmg"
