@@ -51,7 +51,7 @@ jobs:
             git checkout -b pr@${{ matrix.branch }}@upgrade_client
           fi
 
-      - name: Check client version
+      - name: Check Luna release version
         env:
           RELEASED_CLIENT_VERSION: ${{ github.event.client_payload.version }}
         run: |
@@ -61,7 +61,22 @@ jobs:
             version=$(curl --fail --silent --show-error 'https://api.github.com/repos/jumpserver/luna/releases?per_page=100' | jq -r '
               first(
                 .[]
-                | select(any(.assets[]?; .name | test(" Setup\\.exe$|-(arm64|x64)\\.dmg$")))
+                | . as $release
+                | (.tag_name | ltrimstr("v")) as $version
+                | select(
+                    any(
+                      .assets[]?;
+                      .name == "JumpServer-\($version).exe"
+                    )
+                    and any(
+                      .assets[]?;
+                      .name == "JumpServer-\($version)-arm64.dmg"
+                    )
+                    and any(
+                      .assets[]?;
+                      .name == "JumpServer-WebLite-\($version)-x64.msi"
+                    )
+                  )
                 | .tag_name
               ) // empty
             ')
@@ -70,7 +85,7 @@ jobs:
           if [ -n "$version" ]; then
             sed -i "s/CLIENT_VERSION=.*/CLIENT_VERSION=${version}/g" client-version.txt
           else
-            echo "No published Luna release with desktop client assets found"
+            echo "No published Luna release with desktop client and WebLite assets found"
           fi
 
       - name: Check tinker version
