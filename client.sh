@@ -21,7 +21,7 @@ weblite_file="JumpServer-WebLite-${CLIENT_VERSION}-x64.msi"
 
 wget --https-only \
     --output-document="${windows_file}" \
-    "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}.exe"
+    "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}-Setup.exe"
 wget --https-only \
     --output-document="${macos_arm64_file}" \
     "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}-arm64.dmg"

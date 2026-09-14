@@ -66,7 +66,7 @@ jobs:
                 | select(
                     any(
                       .assets[]?;
-                      .name == "JumpServer-\($version).exe"
+                      .name == "JumpServer-\($version)-Setup.exe"
                     )
                     and any(
                       .assets[]?;
