@@ -7,7 +7,7 @@ on:
       - "osm"
     paths:
       - "versions.txt"
-      - "prepare.sh"
+      - "static.sh"
       - "Dockerfile-static"
 
 jobs:

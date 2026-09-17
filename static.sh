@@ -36,21 +36,8 @@ cd ${DOWNLOAD_DIR}/public || exit 1
 # wget ${DOWNLOAD_URL}/public/Microsoft_Remote_Desktop_${MRD_VERSION}_installer.pkg
 wget https://github.com/PowerShell/Win32-OpenSSH/releases/download/${OPENSSH_VERSION}p1-Beta/OpenSSH-Win64-${OPENSSH_VERSION}.msi
 
-clients=(
-    "${CLIENT_NAME}Client_${CLIENT_VERSION}_x64-setup.exe"
-    "${CLIENT_NAME}Client_${CLIENT_VERSION}_aarch64.dmg"
-)
-for client in "${clients[@]}"; do
-    wget "https://github.com/jumpserver/clients/releases/download/v${CLIENT_VERSION}/${client}"
-done
-
 for arch in x64 arm64; do
     wget https://downloads.mongodb.com/compass/mongosh-${MONGOSH_VERSION}-linux-${arch}.tgz
-done
-
-for i in $(ls ${CLIENT_NAME}*);do
-   to=${i/${CLIENT_NAME}/}
-   ln -s ${i} ${to}
 done
 
 cp "${PROJECT_DIR}"/versions.txt ${DOWNLOAD_DIR}

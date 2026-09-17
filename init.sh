@@ -1,17 +1,10 @@
 #!/bin/bash
 #
-https_port=${HTTPS_PORT:-443}
-
-
 function config_nginx() {
   config_file=$1
   if [ ! -f "${config_file}" ]; then
     echo "config file ${config_file} not found"
     exit 1
-  fi
-
-  if [ -z "${USE_LB}" ]; then
-    USE_LB=1
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
@@ -30,10 +23,13 @@ function config_nginx() {
     sed -i "s@client_max_body_size .*;@client_max_body_size ${CLIENT_MAX_BODY_SIZE};@g" /etc/nginx/conf.d/*.conf
   fi
 
-  if [ "${USE_LB}" == "1" ]; then
-    sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $remote_addr;@g' "${config_file}"
-  else
+  # Only an explicit USE_LB=0 means there is a trusted proxy in front of us.
+  # Otherwise this server is the trust boundary and must discard client-supplied
+  # X-Forwarded-For values.
+  if [ "${USE_LB:-1}" == "0" ]; then
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
+  else
+    sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $remote_addr;@g' "${config_file}"
   fi
 }
 
@@ -52,16 +48,39 @@ function config_helm() {
   fi
 }
 
-# Installer mount
-# https://github.com/jumpserver/installer/blob/dev/compose/docker-compose-lb.yml#L14
-function config_http() {
-  config_file=/etc/nginx/conf.d/http_server.conf
-  if [ -f "${config_file}" ]; then
-    rm -f "${config_file}"
-  fi
-  cp -f /etc/nginx/sites-enabled/http_server.conf "${config_file}"
+function config_certificate() {
+  cert_dir=/etc/nginx/cert
+  example_dir=/etc/nginx/example
+  default_cert_name=server.crt
+  default_key_name=server.key
+  cert_name=${SSL_CERTIFICATE:-${default_cert_name}}
+  key_name=${SSL_CERTIFICATE_KEY:-${default_key_name}}
+  cert_file=${cert_dir}/${cert_name}
+  key_file=${cert_dir}/${key_name}
 
-  config_nginx "${config_file}"
+  mkdir -p "${cert_dir}"
+
+  if [[ ! -f "${cert_file}" || ! -f "${key_file}" ]]; then
+    if [[ -n "${SSL_CERTIFICATE}" || -n "${SSL_CERTIFICATE_KEY}" ]]; then
+      echo "Warning: SSL certificate or private key not found: ${cert_file}, ${key_file}"
+      echo "Falling back to the default certificate pair: ${default_cert_name}, ${default_key_name}"
+    fi
+
+    cert_name=${default_cert_name}
+    key_name=${default_key_name}
+    cert_file=${cert_dir}/${cert_name}
+    key_file=${cert_dir}/${key_name}
+  fi
+
+  if [[ ! -f "${cert_file}" && ! -f "${key_file}" ]]; then
+    cp -f "${example_dir}/example.crt" "${cert_file}"
+    cp -f "${example_dir}/example.key" "${key_file}"
+  elif [[ ! -f "${cert_file}" || ! -f "${key_file}" ]]; then
+    echo "SSL certificate and private key must both exist: ${cert_file}, ${key_file}"
+    exit 1
+  fi
+
+  chmod 600 "${cert_file}" "${key_file}"
 }
 
 function config_https() {
@@ -71,26 +90,25 @@ function config_https() {
   fi
   cp -f /etc/nginx/sites-enabled/https_server.conf "${config_file}"
 
+  config_certificate
   config_nginx "${config_file}"
 
   sed -i "s@server web:.*;@server localhost:51980;@g" "${config_file}"
-  if [ "${HTTPS_PORT}" != "443" ]; then
-    # Old 
-    sed -i "s@https://\$server_name\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
-    # New 
-    sed -i "s@https://\$host\$request_uri;@https://\$host:${HTTPS_PORT}\$request_uri;@g" "${config_file}"
+  if [[ -n "${HTTPS_PORT}" && "${HTTPS_PORT}" != "0" ]]; then
+    if [ "${HTTPS_PORT}" == "443" ]; then
+      redirect_url='https://$host$request_uri'
+    else
+      redirect_url="https://\$host:${HTTPS_PORT}\$request_uri"
+    fi
+    sed -i "s@  # HTTPS_REDIRECT@  return 307 ${redirect_url};@g" "${config_file}"
   fi
 
   if [ "${USE_IPV6}" == "1" ]; then
-    sed -i "s@# listen \[::\]:443@listen \[::\]:443@g" "${config_file}"
+    sed -i "s@# listen \[::\]:443 ssl;@listen [::]:443 ssl;@g" "${config_file}"
   fi
 
-  if [ -n "${SSL_CERTIFICATE}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE}" ]; then
-    sed -i "s@ssl_certificate .*;@ssl_certificate cert/${SSL_CERTIFICATE};@g" "${config_file}"
-  fi
-  if [ -n "${SSL_CERTIFICATE_KEY}" ] && [ -f "/etc/nginx/cert/${SSL_CERTIFICATE_KEY}" ]; then
-    sed -i "s@ssl_certificate_key .*;@ssl_certificate_key cert/${SSL_CERTIFICATE_KEY};@g" "${config_file}"
-  fi
+  sed -i "s@ssl_certificate .*;@ssl_certificate cert/${cert_name};@g" "${config_file}"
+  sed -i "s@ssl_certificate_key .*;@ssl_certificate_key cert/${key_name};@g" "${config_file}"
   if [ -n "${CLIENT_MAX_BODY_SIZE}" ]; then
     sed -i "s@client_max_body_size .*;@client_max_body_size ${CLIENT_MAX_BODY_SIZE};@g" "${config_file}"
   fi
@@ -108,40 +126,37 @@ function config_components() {
     safe_move /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
   fi
 
-  if [ "${KOKO_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
+  if [ "${KAEL_ENABLED}" == "0" ]; then
+    safe_move /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
+  else
+    safe_move /etc/nginx/includes/kael.conf.disabled /etc/nginx/includes/kael.conf
   fi
 
-  if [ "${LION_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/lion.conf /etc/nginx/includes/lion.conf.disabled
+  if [ "${KOKO_ENABLED}" == "0" ]; then
+    safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
   fi
 
   if [ "${CHEN_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
-  if [ "${KOTL_ENABLED}" == "1" ]; then
-    safe_move /etc/nginx/includes/kotl.conf.disabled /etc/nginx/includes/kotl.conf
+  if [ "${USE_XPACK}" == "1" ]; then
+    safe_move /etc/nginx/includes/jdmc.conf.disabled /etc/nginx/includes/jdmc.conf
   else
-    safe_move /etc/nginx/includes/kotl.conf /etc/nginx/includes/kotl.conf.disabled
-  fi
-
-  if [ "${FACELIVE_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/facelive.conf /etc/nginx/includes/facelive.conf.disabled
+    safe_move /etc/nginx/includes/jdmc.conf /etc/nginx/includes/jdmc.conf.disabled
   fi
 
   if [[ "${USE_XPACK}" == "1" && "${RAZOR_ENABLED}" != "0" ]]; then
     safe_move /etc/nginx/includes/razor.conf.disabled /etc/nginx/includes/razor.conf
-  fi
-
-  if [[ "${USE_XPACK}" == "1" && "${FACELIVE_ENABLED}" == "1" ]]; then
-    safe_move /etc/nginx/includes/facelive.conf.disabled /etc/nginx/includes/facelive.conf
   fi
 }
 
 function copy_versions_to_core() {
   if [[ -f "/opt/download/versions.txt" && -d "/opt/jumpserver/data/"  ]]; then
     cp -f /opt/download/versions.txt /opt/jumpserver/data/version.txt
+    if [[ -f "/opt/download/client-version.txt" ]]; then
+      cat /opt/download/client-version.txt >> /opt/jumpserver/data/version.txt
+    fi
   fi
 }
 
@@ -157,11 +172,7 @@ function main() {
     exit 0
   fi
 
-  if [ -f "/etc/nginx/sites-enabled/https_server.conf" ]; then
-    config_https
-  else
-    config_http
-  fi
+  config_https
   config_components
 
   if [ -f "/etc/init.d/cron" ]; then

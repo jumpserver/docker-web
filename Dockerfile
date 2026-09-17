@@ -21,8 +21,7 @@ RUN set -ex \
     && apt-get -y install --no-install-recommends ${TOOLS} \
     && wget https://github.com/jumpserver-dev/healthcheck/releases/latest/download/check_linux_${TARGETARCH}.deb \
     && dpkg -i check_linux_${TARGETARCH}.deb \
-    && apt-get purge -y wget \
-        curl \
+    && apt-get purge -y curl \
         nginx-module-xslt \
         nginx-module-njs \
         libxml2 \
@@ -38,8 +37,10 @@ WORKDIR /opt
 COPY --from=lina /opt/lina /opt/lina
 COPY --from=luna /opt/luna /opt/luna
 COPY versions.txt /opt/download/versions.txt
+COPY client-version.txt /opt/download/client-version.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
+COPY example /etc/nginx/example
 COPY default.conf /etc/nginx/conf.d/default.conf
-COPY http_server.conf /etc/nginx/sites-enabled/http_server.conf
+COPY https_server.conf /etc/nginx/sites-enabled/https_server.conf
 COPY init.sh /docker-entrypoint.d/40-init-config.sh
