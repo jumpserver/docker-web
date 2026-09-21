@@ -25,8 +25,7 @@ DOWNLOAD_DIR=/opt/download
 mkdir -p ${DOWNLOAD_DIR}/applets
 cd ${DOWNLOAD_DIR}/applets || exit 1
 wget -O jumpserver-tinker-python-${PYTHON_VERSION}-win64.zip https://github.com/jumpserver-dev/Python-Embed-Win64/releases/download/${PYTHON_VERSION}/jumpserver-tinker-python-${PYTHON_VERSION}-package-win64.zip
-wget ${DOWNLOAD_URL}/public/dbeaver-ce-${DBEAVER_VERSION}-x86_64-setup.exe
-wget ${DOWNLOAD_URL}/public/dbeaver-patch-${DBEAVER_VERSION}-x86_64-setup.msi
+wget ${DOWNLOAD_URL}/download/applets/DBX-${DBX_VERSION}-windows-x64.zip
 wget ${DOWNLOAD_URL}/public/Tinker_Installer_${TINKER_VERSION}.exe
 
 mkdir -p ${DOWNLOAD_DIR}/public
