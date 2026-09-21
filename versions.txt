@@ -1,10 +1,10 @@
 # 更改这些版本号，目前需要同步修改
 # 1. https://github.com/jumpserver/jumpserver/blob/dev/apps/jumpserver/views/other.py#L99
-# 2. https://github.com/jumpserver/jumpserver/blob/dev/apps/terminal/automations/deploy_applet_host/playbook.yml#L18
+# 2. https://github.com/jumpserver/jumpserver/blob/dev/apps/terminal/const.py (TINKER_TARGET_VERSION)
 PLAY_VERSION=1.1.0-1
 PYTHON_VERSION=3.11.11
 DBX_VERSION=0.6.17-agents-0.2.114
 MRD_VERSION=10.6.7
 OPENSSH_VERSION=v9.4.0.0
 MONGOSH_VERSION=2.2.12
-TINKER_VERSION=v0.3.0
+TINKER_VERSION=v0.3.1
