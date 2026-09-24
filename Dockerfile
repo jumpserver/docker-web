@@ -42,5 +42,15 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY includes /etc/nginx/includes
 COPY example /etc/nginx/example
 COPY default.conf /etc/nginx/conf.d/default.conf
+COPY luna-bfcache.conf /etc/nginx/conf.d/luna-bfcache.conf
 COPY https_server.conf /etc/nginx/sites-enabled/https_server.conf
 COPY init.sh /docker-entrypoint.d/40-init-config.sh
+
+# Terminal freeze protection: hold a Web Lock per open terminal websocket so
+# Chromium's background tab freezing exempts Luna pages, and keep Luna HTML
+# out of the Back-Forward Cache (see luna-bfcache.conf). The guard is a
+# plain synchronous script injected before the Luna app boots.
+COPY utils/luna-terminal-session-guard.js /tmp/luna-terminal-session-guard.js
+COPY utils/install-luna-terminal-guard.sh /tmp/install-luna-terminal-guard.sh
+RUN sh /tmp/install-luna-terminal-guard.sh \
+    && rm /tmp/luna-terminal-session-guard.js /tmp/install-luna-terminal-guard.sh
