@@ -1,3 +1,7 @@
+variable "PAM_AGENT_VERSION" {
+    default = ""
+}
+
 variable "VERSION" {
     default = "dev"
 }
@@ -52,6 +56,7 @@ target "ce" {
     output = PUSH_ENABLED ? ["type=registry"] : ["type=docker"]
     args = {
         VERSION = "${VERSION}"
+        PAM_AGENT_VERSION = "${PAM_AGENT_VERSION}"
     }
     contexts = {
         "jumpserver/lina:${VERSION}" = "target:lina"

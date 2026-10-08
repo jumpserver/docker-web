@@ -1,0 +1,2 @@
+# Independent PAM clients release; override using the build argument.
+PAM_AGENT_VERSION=${PAM_AGENT_VERSION:-1.0.1}

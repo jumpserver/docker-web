@@ -15,3 +15,24 @@ Nginx 会回源到公共静态文件服务。客户端和 WebLite 共用 `client
 VERSION=dev
 docker buildx build --build-arg VERSION=${VERSION} -t jumpserver/web:${VERSION} . --load
 ```
+
+## PAM Agent 安装包
+
+SDK / Agent 在 `jumpserver/pam-clients` 仓库独立发布。tag CI 编译 Linux amd64 / arm64
+Agent，上传二进制、SDK 源码压缩包和 `SHA256SUMS` 到草稿 Release，审核后发布。
+
+Web 通过 `pam-agent.sh` 从该仓库下载并校验 Agent，CE / EE 均包含。
+`pam-agent-version.txt` 固定独立客户端版本，也可使用构建参数 `PAM_AGENT_VERSION` 覆盖。
+它与 Web / JumpServer 的 `VERSION` 无关，开发镜像也使用固定版本。
+
+当前固定为 `1.0.1`，对应 pam-clients 的 `v1.0.1` Release。
+后续 Web 构建复用已发布版本，无需等待 JumpServer Release。
+文件缺失或校验失败会使构建失败。
+
+用户下载地址：
+
+- `/download/pam/jms-pam-agent-linux-amd64`
+- `/download/pam/jms-pam-agent-linux-arm64`
+- `/download/pam/SHA256SUMS`
+
+用户文档直接链接当前 JumpServer 的上述地址，无需获取源码或编译。
