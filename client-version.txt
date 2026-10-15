@@ -1,4 +1,4 @@
 # Client and WebLite installers are downloaded only while building Dockerfile-ee.
-CLIENT_VERSION=5.1.0-rc3
+CLIENT_VERSION=5.1.0
 CLIENT_NAME=JumpServer
-WEBLITE_VERSION=5.1.0-rc3
+WEBLITE_VERSION=5.1.0
