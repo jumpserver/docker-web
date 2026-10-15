@@ -7,8 +7,12 @@ PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
 : "${CLIENT_VERSION:?CLIENT_VERSION is required}"
 : "${CLIENT_NAME:?CLIENT_NAME is required}"
+: "${WEBLITE_VERSION:?WEBLITE_VERSION is required}"
 
-RELEASE_URL=${CLIENT_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/v${CLIENT_VERSION}}
+CLIENT_RELEASE_TAG=${CLIENT_RELEASE_TAG:-client-v${CLIENT_VERSION}}
+WEBLITE_RELEASE_TAG=${WEBLITE_RELEASE_TAG:-weblite-v${WEBLITE_VERSION}}
+RELEASE_URL=${CLIENT_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/${CLIENT_RELEASE_TAG}}
+WEBLITE_RELEASE_URL=${WEBLITE_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/${WEBLITE_RELEASE_TAG}}
 DOWNLOAD_DIR=${CLIENT_DOWNLOAD_DIR:-/opt/download/public}
 WEBLITE_DOWNLOAD_DIR=${WEBLITE_DOWNLOAD_DIR:-/opt/download/applets}
 
@@ -17,7 +21,7 @@ cd "${DOWNLOAD_DIR}"
 
 windows_file="${CLIENT_NAME}Client_${CLIENT_VERSION}_x64-setup.exe"
 macos_arm64_file="${CLIENT_NAME}Client_${CLIENT_VERSION}_aarch64.dmg"
-weblite_file="JumpServer-WebLite-${CLIENT_VERSION}-x64.msi"
+weblite_file="JumpServer-WebLite-${WEBLITE_VERSION}-x64.msi"
 
 wget --https-only \
     --output-document="${windows_file}" \
@@ -27,7 +31,7 @@ wget --https-only \
     "${RELEASE_URL}/${CLIENT_NAME}-${CLIENT_VERSION}-arm64.dmg"
 wget --https-only \
     --output-document="${WEBLITE_DOWNLOAD_DIR}/${weblite_file}" \
-    "${RELEASE_URL}/${weblite_file}"
+    "${WEBLITE_RELEASE_URL}/${weblite_file}"
 
 ln -s "${windows_file}" "Client_${CLIENT_VERSION}_x64-setup.exe"
 ln -s "${macos_arm64_file}" "Client_${CLIENT_VERSION}_aarch64.dmg"

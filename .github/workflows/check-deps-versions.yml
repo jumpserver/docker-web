@@ -1,6 +1,6 @@
 on:
   repository_dispatch:
-    types: [client-released]
+    types: [client-released, weblite-released]
   schedule:
     - cron: "0 1 * * *"
   push:
@@ -9,9 +9,14 @@ on:
 
 name: Check Dependencies Versions
 
+concurrency:
+  group: dependency-versions-dev
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
     strategy:
@@ -22,6 +27,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.branch }}
+          token: ${{ secrets.PRIVATE_TOKEN }}
+
+      - name: Validate independent product versions
+        run: node --test --test-concurrency=1 .github/scripts/client-versions.test.mjs
 
       - name: Set up Git
         run: |
@@ -51,42 +60,31 @@ jobs:
             git checkout -b pr@${{ matrix.branch }}@upgrade_client
           fi
 
-      - name: Check Luna release version
-        env:
-          RELEASED_CLIENT_VERSION: ${{ github.event.client_payload.version }}
-        run: |
-          if [ -n "$RELEASED_CLIENT_VERSION" ]; then
-            version="$RELEASED_CLIENT_VERSION"
-          else
-            version=$(curl --fail --silent --show-error 'https://api.github.com/repos/jumpserver/luna/releases?per_page=100' | jq -r '
-              first(
-                .[]
-                | . as $release
-                | (.tag_name | ltrimstr("v")) as $version
-                | select(
-                    any(
-                      .assets[]?;
-                      .name == "JumpServer-\($version)-Setup.exe"
-                    )
-                    and any(
-                      .assets[]?;
-                      .name == "JumpServer-\($version)-arm64.dmg"
-                    )
-                    and any(
-                      .assets[]?;
-                      .name == "JumpServer-WebLite-\($version)-x64.msi"
-                    )
-                  )
-                | .tag_name
-              ) // empty
-            ')
-          fi
-          version="${version#v}"
-          if [ -n "$version" ]; then
-            sed -i "s/CLIENT_VERSION=.*/CLIENT_VERSION=${version}/g" client-version.txt
-          else
-            echo "No published Luna release with desktop client and WebLite assets found"
-          fi
+      - name: Check Client and WebLite releases
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.PRIVATE_TOKEN }}
+          script: |
+            const { readFile, writeFile } = require('node:fs/promises');
+            const { pathToFileURL } = require('node:url');
+            const { updateClientVersions } = await import(pathToFileURL(
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/client-versions.mjs`
+            ));
+            // Recheck both products on every event; delayed notifications must not
+            // roll back a pin or erase the other product's pending update.
+            const path = 'client-version.txt';
+            const previous = await readFile(path, 'utf8');
+            let content = previous;
+            // ponytail: inspect at most 1,000 recent releases, one page at a time.
+            // Raise this limit if a product's releases fall outside that window.
+            for (let page = 1; page <= 10; page++) {
+              const { data } = await github.rest.repos.listReleases({
+                owner: 'jumpserver', repo: 'luna', per_page: 100, page,
+              });
+              content = updateClientVersions(content, data);
+              if (data.length < 100) break;
+            }
+            if (content !== previous) await writeFile(path, content);
 
       - name: Check tinker version
         run: |
@@ -104,7 +102,7 @@ jobs:
       - name: Update Client Version
         if: env.need_update == '1'
         run: |
-          git add .
+          git add client-version.txt versions.txt
           git commit -m "Update pkg versions"
           if [ "$branch_exists" == "true" ]; then
             git push --force-with-lease origin pr@${{ matrix.branch }}@upgrade_client

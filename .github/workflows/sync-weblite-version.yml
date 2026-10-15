@@ -35,10 +35,10 @@ jobs:
               return Buffer.from(data.content, 'base64').toString('utf8');
             }
 
-            function clientVersion(content) {
-              const matches = [...content.matchAll(/^CLIENT_VERSION=([^\r\n]*)\r?$/gm)];
+            function webliteVersion(content) {
+              const matches = [...content.matchAll(/^WEBLITE_VERSION=([^\r\n]*)\r?$/gm)];
               if (matches.length !== 1 || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(matches[0][1])) {
-                throw new Error('Expected one valid CLIENT_VERSION in client-version.txt');
+                throw new Error('Expected one valid WEBLITE_VERSION in client-version.txt');
               }
               return matches[0][1];
             }
@@ -49,7 +49,7 @@ jobs:
               });
               const sha = data.object.sha;
               const content = await readFile(context.repo, 'client-version.txt', sha);
-              return { sha, version: clientVersion(content) };
+              return { sha, version: webliteVersion(content) };
             }
 
             const source = await sourceVersion();
@@ -84,7 +84,7 @@ jobs:
 
             // An older queued run must not publish a superseded version.
             if ((await sourceVersion()).version !== source.version) {
-              core.info('The client version changed during this run; the queued run will synchronize it');
+              core.info('The WebLite version changed during this run; the queued run will synchronize it');
               return;
             }
 
@@ -140,7 +140,7 @@ jobs:
             const details = {
               ...target,
               title: `chore: sync WebLite to ${source.version}`,
-              body: `Update the WebLite installer, manifest version and uninstall package to ${source.version}, matching [docker-web/client-version.txt](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${source.sha}/client-version.txt).`,
+              body: `Update the WebLite installer, manifest version and uninstall package to ${source.version}, matching WEBLITE_VERSION in [docker-web/client-version.txt](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${source.sha}/client-version.txt).`,
             };
             const { data: updatedPull } = pull
               ? await github.rest.pulls.update({ ...details, pull_number: pull.number })
