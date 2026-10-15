@@ -1,0 +1,148 @@
+name: Sync WebLite Version
+
+on:
+  push:
+    branches: [dev]
+    paths: [client-version.txt]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-weblite-dev
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sync core WebLite manifests and pull request
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.PRIVATE_TOKEN }}
+          script: |
+            const target = { owner: 'jumpserver', repo: 'jumpserver' };
+            const base = 'dev';
+            const branch = 'auto_sync_weblite';
+            const directory = 'apps/terminal/applets/weblite';
+
+            async function readFile(repository, path, ref) {
+              const { data } = await github.rest.repos.getContent({
+                ...repository, path, ref,
+              });
+              return Buffer.from(data.content, 'base64').toString('utf8');
+            }
+
+            function webliteVersion(content) {
+              const matches = [...content.matchAll(/^WEBLITE_VERSION=([^\r\n]*)\r?$/gm)];
+              if (matches.length !== 1 || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(matches[0][1])) {
+                throw new Error('Expected one valid WEBLITE_VERSION in client-version.txt');
+              }
+              return matches[0][1];
+            }
+
+            async function sourceVersion() {
+              const { data } = await github.rest.git.getRef({
+                ...context.repo, ref: `heads/${base}`,
+              });
+              const sha = data.object.sha;
+              const content = await readFile(context.repo, 'client-version.txt', sha);
+              return { sha, version: webliteVersion(content) };
+            }
+
+            const source = await sourceVersion();
+            const { data: baseRef } = await github.rest.git.getRef({
+              ...target, ref: `heads/${base}`,
+            });
+            const { data: baseCommit } = await github.rest.git.getCommit({
+              ...target, commit_sha: baseRef.object.sha,
+            });
+            const installer = `JumpServer-WebLite-${source.version}-x64.msi`;
+            const replacements = [
+              ['setup.yml', /^source: jms:\/\/\/download\/applets\/JumpServer-WebLite-[^\r\n]+-x64\.msi$/gm,
+                `source: jms:///download/applets/${installer}`],
+              ['manifest.yml', /^version: [^\r\n]+$/gm, `version: ${source.version}`],
+              ['uninstall.yml', /^product_name: JumpServer-WebLite-[^\r\n]+-x64\.msi$/gm,
+                `product_name: ${installer}`],
+            ];
+            const changes = await Promise.all(replacements.map(async ([name, pattern, value]) => {
+              const path = `${directory}/${name}`;
+              const previous = await readFile(target, path, baseCommit.sha);
+              if ([...previous.matchAll(pattern)].length !== 1) {
+                throw new Error(`Expected one version field in ${path}`);
+              }
+              const content = previous.replace(pattern, value);
+              return content === previous ? null : { path, mode: '100644', type: 'blob', content };
+            }));
+            const files = changes.filter(Boolean);
+            const { data: pulls } = await github.rest.pulls.list({
+              ...target, state: 'open', head: `${target.owner}:${branch}`, base,
+            });
+            const pull = pulls[0];
+
+            // An older queued run must not publish a superseded version.
+            if ((await sourceVersion()).version !== source.version) {
+              core.info('The WebLite version changed during this run; the queued run will synchronize it');
+              return;
+            }
+
+            if (files.length === 0) {
+              if (pull) {
+                await github.rest.pulls.update({
+                  ...target, pull_number: pull.number, state: 'closed',
+                });
+              }
+              core.info(`Core WebLite already matches ${source.version}`);
+              return;
+            }
+
+            let branchRef;
+            try {
+              const { data } = await github.rest.git.getRef({
+                ...target, ref: `heads/${branch}`,
+              });
+              branchRef = data;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+            const { data: tree } = await github.rest.git.createTree({
+              ...target, base_tree: baseCommit.tree.sha, tree: files,
+            });
+            let branchCommit;
+            if (branchRef) {
+              const { data } = await github.rest.git.getCommit({
+                ...target, commit_sha: branchRef.object.sha,
+              });
+              branchCommit = data;
+            }
+            // Reuse the existing commit only when it also uses the current base.
+            if (!branchCommit || branchCommit.tree.sha !== tree.sha ||
+                branchCommit.parents.length !== 1 || branchCommit.parents[0].sha !== baseCommit.sha) {
+              const { data: commit } = await github.rest.git.createCommit({
+                ...target,
+                message: `chore: sync WebLite to ${source.version}`,
+                tree: tree.sha,
+                parents: [baseCommit.sha],
+              });
+              if (branchRef) {
+                await github.rest.git.updateRef({
+                  ...target, ref: `heads/${branch}`, sha: commit.sha, force: true,
+                });
+              } else {
+                await github.rest.git.createRef({
+                  ...target, ref: `refs/heads/${branch}`, sha: commit.sha,
+                });
+              }
+            }
+
+            const details = {
+              ...target,
+              title: `chore: sync WebLite to ${source.version}`,
+              body: `Update the WebLite installer, manifest version and uninstall package to ${source.version}, matching WEBLITE_VERSION in [docker-web/client-version.txt](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${source.sha}/client-version.txt).`,
+            };
+            const { data: updatedPull } = pull
+              ? await github.rest.pulls.update({ ...details, pull_number: pull.number })
+              : await github.rest.pulls.create({ ...details, head: branch, base });
+            core.info(updatedPull.html_url);

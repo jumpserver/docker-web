@@ -36,6 +36,11 @@ WORKDIR /opt
 
 COPY --from=lina /opt/lina /opt/lina
 COPY --from=luna /opt/luna /opt/luna
+ARG VERSION
+ARG PAM_AGENT_VERSION
+COPY pam-agent.sh pam-agent-version.txt /tmp/
+RUN PAM_AGENT_VERSION="${PAM_AGENT_VERSION}" sh /tmp/pam-agent.sh \
+    && rm -f /tmp/pam-agent.sh /tmp/pam-agent-version.txt
 COPY versions.txt /opt/download/versions.txt
 COPY client-version.txt /opt/download/client-version.txt
 COPY nginx.conf /etc/nginx/nginx.conf
