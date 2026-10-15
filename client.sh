@@ -9,10 +9,8 @@ PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 : "${CLIENT_NAME:?CLIENT_NAME is required}"
 : "${WEBLITE_VERSION:?WEBLITE_VERSION is required}"
 
-CLIENT_RELEASE_TAG=${CLIENT_RELEASE_TAG:-client-v${CLIENT_VERSION}}
-WEBLITE_RELEASE_TAG=${WEBLITE_RELEASE_TAG:-weblite-v${WEBLITE_VERSION}}
-RELEASE_URL=${CLIENT_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/${CLIENT_RELEASE_TAG}}
-WEBLITE_RELEASE_URL=${WEBLITE_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/${WEBLITE_RELEASE_TAG}}
+RELEASE_URL=${CLIENT_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/client-v${CLIENT_VERSION}}
+WEBLITE_RELEASE_URL=${WEBLITE_RELEASE_URL:-https://github.com/jumpserver/luna/releases/download/weblite-v${WEBLITE_VERSION}}
 DOWNLOAD_DIR=${CLIENT_DOWNLOAD_DIR:-/opt/download/public}
 WEBLITE_DOWNLOAD_DIR=${WEBLITE_DOWNLOAD_DIR:-/opt/download/applets}
 

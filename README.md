@@ -9,9 +9,7 @@ WebLite MSI 下载到 `/opt/download/applets/`。
 Nginx 会回源到公共静态文件服务。
 
 `client-version.txt` 分别用 `CLIENT_VERSION`、`WEBLITE_VERSION` 固定两个产品的版本，
-`CLIENT_RELEASE_TAG`、`WEBLITE_RELEASE_TAG` 记录对应的 Luna Release tag。
-新发布分别使用 `client-v<version>`、`weblite-v<version>`，安装包文件名保持不变；
-已有旧版安装包保留明确的 `v<version>` tag，避免切换期间下载失效。
+下载时分别使用 `client-v<version>`、`weblite-v<version>` Release tag，安装包文件名保持不变。
 可分别使用 `CLIENT_RELEASE_URL`、`WEBLITE_RELEASE_URL` 覆盖下载源。
 
 Luna 将正式发布的文件同步到 OSS 后，分别发送 `client-released`、`weblite-released` 通知。

@@ -17,8 +17,7 @@ import { updateClientVersions } from "./client-versions.mjs";
 
 const repo = fileURLToPath(new URL("../..", import.meta.url));
 const pinned =
-  "CLIENT_VERSION=5.1.0-rc3\nCLIENT_NAME=JumpServer\nCLIENT_RELEASE_TAG=v5.1.0-rc3\n" +
-  "WEBLITE_VERSION=5.1.0-rc3\nWEBLITE_RELEASE_TAG=v5.1.0-rc3\n";
+  "CLIENT_VERSION=5.1.0-rc3\nCLIENT_NAME=JumpServer\nWEBLITE_VERSION=5.1.0-rc3\n";
 
 function release(target, version, overrides = {}) {
   const names =
@@ -46,9 +45,7 @@ test("selects complete published releases independently by version, preserving i
   ];
   const content = updateClientVersions(pinned, releases);
   assert.match(content, /^CLIENT_VERSION=5\.1\.10$/m);
-  assert.match(content, /^CLIENT_RELEASE_TAG=client-v5\.1\.10$/m);
   assert.match(content, /^WEBLITE_VERSION=5\.2\.0$/m);
-  assert.match(content, /^WEBLITE_RELEASE_TAG=weblite-v5\.2\.0$/m);
   assert.equal(updateClientVersions(content, releases), content);
   assert.equal(
     releases.reduce((pins, item) => updateClientVersions(pins, [item]), pinned),
@@ -56,7 +53,7 @@ test("selects complete published releases independently by version, preserving i
   );
 });
 
-test("client-only updates retain the pinned WebLite and its existing legacy release", () => {
+test("client-only updates retain the pinned WebLite version", () => {
   const content = updateClientVersions(pinned, [release("client", "5.1.0")]);
   assert.match(content, /^CLIENT_VERSION=5\.1\.0$/m);
   for (const line of pinned.split("\n").filter((line) => line.startsWith("WEBLITE_"))) {
@@ -83,7 +80,7 @@ test("late, malformed and incomplete releases cannot downgrade either product", 
   );
   assert.throws(() =>
     updateClientVersions(
-      pinned.replace("CLIENT_RELEASE_TAG=v", "CLIENT_RELEASE_TAG=weblite-v"),
+      pinned.replace("CLIENT_VERSION=5.1.0-rc3", "CLIENT_VERSION=invalid"),
       [],
     ),
   );
@@ -100,7 +97,7 @@ test("orders promoted release candidates numerically", () => {
   );
 });
 
-test("the checked-in pins have matching versions and release tags", () => {
+test("the checked-in pins have valid product versions", () => {
   const content = readFileSync(path.join(repo, "client-version.txt"), "utf8");
   assert.equal(updateClientVersions(content, []), content);
 });
@@ -130,8 +127,6 @@ printf '%s\\n' "$3" > "\${2#--output-document=}"
       WEBLITE_DOWNLOAD_DIR: path.join(root, "applets"),
       CLIENT_RELEASE_URL: "",
       WEBLITE_RELEASE_URL: "",
-      CLIENT_RELEASE_TAG: "",
-      WEBLITE_RELEASE_TAG: "",
     },
     encoding: "utf8",
     timeout: 10_000,
@@ -163,13 +158,4 @@ test("downloader uses separate release tags while retaining public filenames and
       "weblite-v5.2.0",
     ),
   );
-});
-
-test("explicit legacy tags keep downloads working before new product releases exist", (context) => {
-  const { urls } = download(context, pinned);
-  assert.deepEqual(urls, [
-    "https://github.com/jumpserver/luna/releases/download/v5.1.0-rc3/JumpServer-5.1.0-rc3-Setup.exe",
-    "https://github.com/jumpserver/luna/releases/download/v5.1.0-rc3/JumpServer-5.1.0-rc3-arm64.dmg",
-    "https://github.com/jumpserver/luna/releases/download/v5.1.0-rc3/JumpServer-WebLite-5.1.0-rc3-x64.msi",
-  ]);
 });

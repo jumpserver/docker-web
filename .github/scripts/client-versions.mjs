@@ -51,10 +51,9 @@ function readSetting(content, key) {
 export function updateClientVersions(content, releases) {
   for (const { target, key, assets } of products) {
     const currentVersion = readSetting(content, `${key}_VERSION`);
-    const currentTag = readSetting(content, `${key}_RELEASE_TAG`);
     const current = parseVersion(currentVersion);
-    if (!current || ![`v${currentVersion}`, `${target}-v${currentVersion}`].includes(currentTag)) {
-      throw new Error(`Invalid ${key} version or release tag in client-version.txt`);
+    if (!current) {
+      throw new Error(`Invalid ${key} version in client-version.txt`);
     }
     let selected;
     for (const release of releases) {
@@ -70,19 +69,14 @@ export function updateClientVersions(content, releases) {
       )
         continue;
       if (!selected || compareVersions(parsed, selected.parsed) > 0) {
-        selected = { version, tag: release.tag_name, parsed };
+        selected = { version, parsed };
       }
     }
     if (selected) {
-      content = content
-        .replace(
-          new RegExp(`^${key}_VERSION=[^\\r\\n]*`, "m"),
-          `${key}_VERSION=${selected.version}`,
-        )
-        .replace(
-          new RegExp(`^${key}_RELEASE_TAG=[^\\r\\n]*`, "m"),
-          `${key}_RELEASE_TAG=${selected.tag}`,
-        );
+      content = content.replace(
+        new RegExp(`^${key}_VERSION=[^\\r\\n]*`, "m"),
+        `${key}_VERSION=${selected.version}`,
+      );
     }
   }
   return content;
