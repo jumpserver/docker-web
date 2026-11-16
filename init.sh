@@ -25,11 +25,13 @@ function config_nginx() {
 
   # Only an explicit USE_LB=0 means there is a trusted proxy in front of us.
   # Otherwise this server is the trust boundary and must discard client-supplied
-  # X-Forwarded-For values.
+  # X-Forwarded-For and X-Forwarded-Proto values.
   if [ "${USE_LB:-1}" == "0" ]; then
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;@g' "${config_file}"
+    sed -i 's@proxy_set_header X-Forwarded-Proto .*;@proxy_set_header X-Forwarded-Proto $jms_forwarded_proto;@g' "${config_file}"
   else
     sed -i 's@proxy_set_header X-Forwarded-For .*;@proxy_set_header X-Forwarded-For $remote_addr;@g' "${config_file}"
+    sed -i 's@proxy_set_header X-Forwarded-Proto .*;@proxy_set_header X-Forwarded-Proto $scheme;@g' "${config_file}"
   fi
 }
 
