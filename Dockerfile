@@ -2,7 +2,7 @@ ARG VERSION=dev
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
-FROM nginx:1.31-trixie
+FROM nginx:1.31.9-trixie
 ARG TARGETARCH
 
 ARG APT_MIRROR=http://deb.debian.org
