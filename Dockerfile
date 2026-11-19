@@ -2,7 +2,7 @@ ARG VERSION=dev
 FROM jumpserver/lina:${VERSION} AS lina
 FROM jumpserver/luna:${VERSION} AS luna
 
-FROM nginx:1.31-trixie
+FROM nginx:1.31.9-trixie
 ARG TARGETARCH
 
 ARG APT_MIRROR=http://deb.debian.org
@@ -34,13 +34,13 @@ RUN set -ex \
 
 WORKDIR /opt
 
-COPY --from=lina /opt/lina /opt/lina
-COPY --from=luna /opt/luna /opt/luna
-ARG VERSION
 ARG PAM_AGENT_VERSION
 COPY pam-agent.sh pam-agent-version.txt /tmp/
 RUN PAM_AGENT_VERSION="${PAM_AGENT_VERSION}" sh /tmp/pam-agent.sh \
     && rm -f /tmp/pam-agent.sh /tmp/pam-agent-version.txt
+COPY --from=lina /opt/lina /opt/lina
+COPY --from=luna /opt/luna /opt/luna
+ARG VERSION
 COPY versions.txt /opt/download/versions.txt
 COPY client-version.txt /opt/download/client-version.txt
 COPY nginx.conf /etc/nginx/nginx.conf
