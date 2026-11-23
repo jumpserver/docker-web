@@ -112,8 +112,14 @@ function download(context, settings) {
     path.join(root, "bin/wget"),
     `#!/bin/sh
 set -eu
-printf '%s\\n' "$3" >> "$DOWNLOAD_LOG"
-printf '%s\\n' "$3" > "\${2#--output-document=}"
+for arg do
+  case "$arg" in
+    --output-document=*) output=\${arg#--output-document=} ;;
+    https://*) url=$arg ;;
+  esac
+done
+printf '%s\\n' "$url" >> "$DOWNLOAD_LOG"
+printf '%s\\n' "$url" > "$output"
 `,
     { mode: 0o755 },
   );
