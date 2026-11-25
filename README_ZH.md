@@ -2,58 +2,85 @@
 
 [English](./README.md) | **中文**
 
-[JumpServer](https://github.com/jumpserver/jumpserver) 的 Web 容器镜像（`jumpserver/web`）。基于 Nginx 提供统一的 HTTP/HTTPS 访问入口，内置 [Lina](https://github.com/jumpserver/lina) 和 [Luna](https://github.com/jumpserver/luna) 前端以及静态下载资源。
+管理员和用户通过同一个地址就可以打开 JumpServer 管理后台、使用 Web 终端和下载客户端。`jumpserver/web` 镜像内置 Lina 和 Luna，使用 Nginx 提供页面，并把 API 和会话流量转发给 JumpServer 后端。与后端服务一起部署，即可提供统一的 HTTP/HTTPS 入口。[JumpServer](https://github.com/jumpserver/jumpserver)
 
-## 镜像内容
+## 常见问题
 
-- **Nginx 反向代理**：处理 HTTP/HTTPS 流量并转发至各后端组件（`core`、`koko`、`chen`、`kael`、`razor`、`jdmc`）。
-- **Lina**（`/ui/`）：管理后台前端，来自 `jumpserver/lina` 镜像。
-- **Luna**（`/luna/`）：Web 终端与连接工作台前端，来自 `jumpserver/luna` 镜像。
-- **静态资源**（`/download/`、`/player/`）：
-  - **CE 镜像（`Dockerfile`）**：包含 Lina、Luna 以及 `/download/pam/` 下的 PAM Agent 安装包。请求 `/download/` 下本地不存在的文件时，Nginx 会重定向到 `https://static.jumpserver.org/download/`。
-  - **EE 镜像（`Dockerfile-ee`）**：基于 CE 镜像构建，额外打包 `jumpserver/web-static` 中的离线静态资源（录像播放器、Tinker、DBX、OpenSSH、`mongosh` 等）以及 JumpServer 桌面客户端和 WebLite 安装包。
+### 我该选 CE 还是 EE？
 
-## 构建镜像
+| 需求 | 镜像 |
+| --- | --- |
+| 使用管理后台、Web 终端，并提供 Linux PAM Agent 下载 | **CE**，由 [`Dockerfile`](./Dockerfile) 构建 |
+| 在上述功能之外，本地提供录像回放、桌面客户端、WebLite 和应用发布依赖 | **EE**，由 [`Dockerfile-ee`](./Dockerfile-ee) 构建 |
 
-单独构建 CE 镜像（需提前存在 `jumpserver/lina:${VERSION}` 和 `jumpserver/luna:${VERSION}`）：
+### 用户能访问什么？离线时还能下载哪些文件？
+
+| 路径 | 可访问的内容 |
+| --- | --- |
+| `/` 或 `/ui/` | Lina 管理后台 |
+| `/luna/` | Luna Web 终端与连接工作台 |
+| `/download/pam/` | CE 和 EE 都提供 Linux `amd64`、`arm64` 的 PAM Agent 二进制文件和 `SHA256SUMS` |
+| `/download/public/` | EE 提供 Windows x64 和 Apple 芯片 Mac 的 JumpServer 桌面客户端安装包 |
+| `/download/applets/` | EE 提供 WebLite x64 MSI 以及 Tinker、DBX 等离线应用包 |
+| `/player/` | EE 提供录像播放器 |
+
+两个版本都由 Web 容器直接提供镜像内已打包的文件。请求 `/download/` 下缺失的文件时，内置 Nginx 配置会将浏览器重定向到 `static.jumpserver.org` 上的同一路径。离线部署时，请确认镜像已包含用户需要下载的每个文件。见 [`includes/common.conf`](./includes/common.conf)。
+
+### 部署后怎么确认能用？
+
+将示例地址替换为实际部署的 Web 地址，带上协议和端口。
+
+```bash
+JMS_URL=https://jumpserver.example.com
+curl -fsS "$JMS_URL/web/health/"
+# 预期响应: {"status": "ok"}
+```
+
+健康检查用于确认 Web 容器能够响应。要验证完整访问链路，再到 `/ui/` 登录，从 `/luna/` 打开一个 Web 终端。如果登录或连接失败，检查已启用的后端是否运行，以及 Web 容器能否解析相应的上游地址。镜像内置 Core、Koko、Chen、Kael、Razor 和 JDMC 的代理路由。见 [`includes/`](./includes/)。
+
+### 怎么配置 HTTPS、前置代理和后端路由？
+
+以下设置适用于容器启动时使用内置 Nginx 模板的部署方式。见 [`init.sh`](./init.sh)。
+
+| 需求 | 配置 |
+| --- | --- |
+| 用自己的域名提供 HTTPS | 设置 `SERVER_NAME`，把证书和私钥挂载到 `/etc/nginx/cert/`。默认文件名为 `server.crt` 和 `server.key`，可用 `SSL_CERTIFICATE` 和 `SSL_CERTIFICATE_KEY` 指定其他文件名。将宿主机端口映射到容器的 `443`。 |
+| 将 HTTP 请求跳转到 HTTPS | 将 `HTTPS_PORT` 设为对外发布的 HTTPS 端口，例如 `443` 或 `8443`。容器内监听 `80` 和 `443`。 |
+| 通过可信前置代理传递客户端地址 | 前置代理负责管理 `X-Forwarded-For` 时，设置 `USE_LB=0`。默认的 `USE_LB=1` 会将转发头设置为直接连接方的地址。 |
+| 启用 IPv6、调整请求体大小上限或关闭压缩 | 分别使用 `USE_IPV6=1`、`CLIENT_MAX_BODY_SIZE` 和 `GZIP=off`。 |
+| 关闭后端路由或启用企业组件路由 | 将对应的 `CORE_ENABLED`、`KOKO_ENABLED`、`CHEN_ENABLED` 或 `KAEL_ENABLED` 设为 `0` 可关闭路由。`USE_XPACK=1` 会启用 JDMC，同时启用 Razor，后者可通过 `RAZOR_ENABLED=0` 关闭。 |
+
+Helm 挂载 `/etc/nginx/sites-enabled/jms.conf` 时，启动脚本会将该文件用作站点配置。请通过 Chart 配置管理 TLS 和组件路由。
+
+### 怎么从源码构建镜像？
+
+在仓库根目录运行 Docker Buildx Bake。它会构建 Lina 和 Luna 依赖，并默认将选中的 Web 镜像加载到 Docker。构建 EE 时还会构建 CE，并拉取 `Dockerfile-ee` 中固定的 `jumpserver/web-static` 镜像。见 [`docker-bake.hcl`](./docker-bake.hcl)。
+
+```bash
+VERSION=dev docker buildx bake       # jumpserver/web:dev-ce
+VERSION=dev docker buildx bake ee    # jumpserver/web:dev-ee
+```
+
+可通过 `LINA_BRANCH` 和 `LUNA_BRANCH` 指定前端分支，用 `PAM_AGENT_VERSION` 覆盖固定的 PAM Agent 版本，或设置 `PUSH_ENABLED=true` 将选中的 Web 镜像推送到镜像仓库。
+
+如果构建器已能找到 `jumpserver/lina:${VERSION}` 和 `jumpserver/luna:${VERSION}`，可以直接构建 CE。
 
 ```bash
 VERSION=dev
-docker buildx build --build-arg VERSION=${VERSION} -t jumpserver/web:${VERSION}-ce . --load
+docker buildx build --build-arg VERSION="${VERSION}" \
+  -t "jumpserver/web:${VERSION}-ce" --load .
 ```
 
-或通过 `docker-bake.hcl` 联动构建 Lina、Luna 与 Web：
+### 更新安装包或录像播放器时，要重建哪个镜像？
+
+| 资源 | 版本文件与下载脚本 | 需要重建 |
+| --- | --- | --- |
+| PAM Agent | [`pam-agent-version.txt`](./pam-agent-version.txt) · [`pam-agent.sh`](./pam-agent.sh)。构建时下载两个架构的 Linux 二进制文件，并按 `SHA256SUMS` 校验。 | CE，若发布 EE 则随后重建 EE |
+| 桌面客户端或 WebLite | [`client-version.txt`](./client-version.txt) · [`client.sh`](./client.sh)。`CLIENT_VERSION` 和 `WEBLITE_VERSION` 分别固定 Luna 中的两个发布版本。桌面客户端保留 `Client_<ver>_*` 兼容软链接。 | 仅 EE |
+| 录像播放器、Tinker、DBX、OpenSSH 或 `mongosh` | [`versions.txt`](./versions.txt) · [`static.sh`](./static.sh)。更新版本时同步修改 `versions.txt` 注释中列出的 JumpServer 关联位置。 | 先重建 `web-static`，再引用新的基础镜像标签重建 EE |
+
+使用 `Dockerfile-static` 在本地构建离线资源镜像。
 
 ```bash
-# 构建 CE（默认 target）
-VERSION=dev docker buildx bake
-
-# 构建 EE
-VERSION=dev docker buildx bake ee
+docker buildx build -f Dockerfile-static -t jumpserver/web-static:dev --load .
 ```
-
-`docker-bake.hcl` 支持的常用变量：`VERSION`、`LINA_BRANCH`、`LUNA_BRANCH`、`PAM_AGENT_VERSION`、`PUSH_ENABLED`。
-
-构建离线静态资源基础镜像（`jumpserver/web-static`）：
-
-```bash
-docker buildx build -f Dockerfile-static -t jumpserver/web-static:dev . --load
-```
-
-## 静态资源与版本管理
-
-静态安装包的版本通过以下三个文件分别维护：
-
-| 文件 | 脚本 | 适用镜像 | 说明 |
-| --- | --- | --- | --- |
-| `pam-agent-version.txt` | `pam-agent.sh` | CE / EE | 固定 [`jumpserver/pam-clients`](https://github.com/jumpserver/pam-clients) 发布版本，下载并校验 `jms-pam-agent-linux-amd64`、`jms-pam-agent-linux-arm64` 和 `SHA256SUMS` 至 `/opt/download/pam/`（下载地址 `/download/pam/`）。可通过 `--build-arg PAM_AGENT_VERSION=<ver>` 覆盖。 |
-| `client-version.txt` | `client.sh` | 仅 EE | 分别通过 `CLIENT_VERSION` 和 `WEBLITE_VERSION` 固定 [`jumpserver/luna`](https://github.com/jumpserver/luna) 发布的桌面客户端（`client-v<ver>`）和 WebLite（`weblite-v<ver>`）版本，下载至 `/opt/download/public/`（保留 `Client_<ver>_*` 软链）和 `/opt/download/applets/`。更新此文件无需重建 `web-static`。 |
-| `versions.txt` | `static.sh` | `web-static` / EE | 固定录像播放器及离线依赖包版本（`Dockerfile-static`）。调整版本时需同步更新文件中注释标注的关联位置。 |
-
-## 运行时配置
-
-容器启动时由 `init.sh` 根据环境变量生成 Nginx 配置（Helm 部署会挂载 `/etc/nginx/sites-enabled/jms.conf`）：
-
-- **HTTP / HTTPS**：`SERVER_NAME`、`HTTPS_PORT`、`SSL_CERTIFICATE`、`SSL_CERTIFICATE_KEY`、`USE_IPV6`、`CLIENT_MAX_BODY_SIZE`、`GZIP`
-- **代理行为**：`USE_LB`（默认为 `1`，不信任客户端传入的 `X-Forwarded-For`；前置存在可信反向代理时设为 `0`）
-- **组件开关**：`CORE_ENABLED`、`KOKO_ENABLED`、`CHEN_ENABLED`、`KAEL_ENABLED`、`USE_XPACK`、`RAZOR_ENABLED`
