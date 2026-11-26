@@ -36,7 +36,7 @@ curl -fsS "$JMS_URL/web/health/"
 # 预期响应: {"status": "ok"}
 ```
 
-健康检查用于确认 Web 容器能够响应。要验证完整访问链路，再到 `/ui/` 登录，从 `/luna/` 打开一个 Web 终端。如果登录或连接失败，检查已启用的后端是否运行，以及 Web 容器能否解析相应的上游地址。镜像内置 Core、Koko、Chen、Kael、Razor 和 JDMC 的代理路由。见 [`includes/`](./includes/)。
+健康检查用于确认 Web 容器能够响应。要验证完整访问链路，再到 `/ui/` 登录，从 `/luna/` 打开一个 Web 终端。如果登录或连接失败，检查已启用的后端是否运行，以及 Web 容器能否解析相应的上游地址。Chen 数据库工作台通过 `/koko/chen/` 访问，Kael 通过 `/kael/` 访问，两者都转发到 Koko。见 [`includes/`](./includes/)。
 
 ### 怎么配置 HTTPS、前置代理和后端路由？
 
@@ -48,7 +48,7 @@ curl -fsS "$JMS_URL/web/health/"
 | 将 HTTP 请求跳转到 HTTPS | 将 `HTTPS_PORT` 设为对外发布的 HTTPS 端口，例如 `443` 或 `8443`。容器内监听 `80` 和 `443`。 |
 | 通过可信前置代理传递客户端地址 | 前置代理负责管理 `X-Forwarded-For` 时，设置 `USE_LB=0`。默认的 `USE_LB=1` 会将转发头设置为直接连接方的地址。 |
 | 启用 IPv6、调整请求体大小上限或关闭压缩 | 分别使用 `USE_IPV6=1`、`CLIENT_MAX_BODY_SIZE` 和 `GZIP=off`。 |
-| 关闭后端路由或启用企业组件路由 | 将对应的 `CORE_ENABLED`、`KOKO_ENABLED`、`CHEN_ENABLED` 或 `KAEL_ENABLED` 设为 `0` 可关闭路由。`USE_XPACK=1` 会启用 JDMC，同时启用 Razor，后者可通过 `RAZOR_ENABLED=0` 关闭。 |
+| 关闭后端路由或启用企业组件路由 | 设置 `CORE_ENABLED=0` 可关闭 Core 路由。`KOKO_ENABLED=0` 关闭 Koko 和 Kael 路由，`KAEL_ENABLED=0` 仅关闭 Kael 路由。`USE_XPACK=1` 会启用 JDMC，同时启用 Razor，后者可通过 `RAZOR_ENABLED=0` 关闭。 |
 
 Helm 挂载 `/etc/nginx/sites-enabled/jms.conf` 时，启动脚本会将该文件用作站点配置。请通过 Chart 配置管理 TLS 和组件路由。
 
