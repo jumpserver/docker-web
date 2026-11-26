@@ -126,7 +126,7 @@ function config_components() {
     safe_move /etc/nginx/includes/core.conf /etc/nginx/includes/core.conf.disabled
   fi
 
-  if [ "${KAEL_ENABLED}" == "0" ]; then
+  if [[ "${KOKO_ENABLED}" == "0" || "${KAEL_ENABLED}" == "0" || "${KAEL_ENABLED}" == "false" ]]; then
     safe_move /etc/nginx/includes/kael.conf /etc/nginx/includes/kael.conf.disabled
   else
     safe_move /etc/nginx/includes/kael.conf.disabled /etc/nginx/includes/kael.conf
@@ -134,10 +134,6 @@ function config_components() {
 
   if [ "${KOKO_ENABLED}" == "0" ]; then
     safe_move /etc/nginx/includes/koko.conf /etc/nginx/includes/koko.conf.disabled
-  fi
-
-  if [ "${CHEN_ENABLED}" == "0" ]; then
-    safe_move /etc/nginx/includes/chen.conf /etc/nginx/includes/chen.conf.disabled
   fi
 
   if [ "${USE_XPACK}" == "1" ]; then

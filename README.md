@@ -36,7 +36,7 @@ curl -fsS "$JMS_URL/web/health/"
 # Expected response: {"status": "ok"}
 ```
 
-The health endpoint checks that the Web container can respond. To verify the full path, sign in at `/ui/` and open a web terminal from `/luna/`. If either action fails, check that the enabled backend services are running and their upstream names resolve from the Web container. The bundled routes cover Core, Koko, Chen, Kael, Razor, and JDMC. See [`includes/`](./includes/).
+The health endpoint checks that the Web container can respond. To verify the full path, sign in at `/ui/` and open a web terminal from `/luna/`. If either action fails, check that the enabled backend services are running and their upstream names resolve from the Web container. Koko serves the Chen database workbench at `/koko/chen/` and Kael at `/kael/`. See [`includes/`](./includes/).
 
 ### How do I configure HTTPS, a reverse proxy, or backend routes?
 
@@ -48,7 +48,7 @@ These settings apply when the container starts with the bundled Nginx templates.
 | Redirect HTTP to HTTPS | Set `HTTPS_PORT` to the externally published HTTPS port, such as `443` or `8443`. The container listens on `80` and `443`. |
 | Forward the client address through a trusted upstream proxy | Set `USE_LB=0` when the upstream proxy manages `X-Forwarded-For`. The default `USE_LB=1` sets the forwarded address to the direct peer address. |
 | Enable IPv6, adjust the request body limit, or disable compression | Use `USE_IPV6=1`, `CLIENT_MAX_BODY_SIZE`, or `GZIP=off`. |
-| Disable a backend route or enable enterprise routes | Set the corresponding `CORE_ENABLED`, `KOKO_ENABLED`, `CHEN_ENABLED`, or `KAEL_ENABLED` to `0` to disable its route. `USE_XPACK=1` enables JDMC and also enables Razor unless `RAZOR_ENABLED=0`. |
+| Disable a backend route or enable enterprise routes | Set `CORE_ENABLED=0` to disable Core routes. `KOKO_ENABLED=0` disables Koko and Kael routes. `KAEL_ENABLED=0` disables only Kael. `USE_XPACK=1` enables JDMC and also enables Razor unless `RAZOR_ENABLED=0`. |
 
 When Helm mounts `/etc/nginx/sites-enabled/jms.conf`, the startup script uses that file as the site configuration. Manage TLS and component routes through the chart's configuration.
 
