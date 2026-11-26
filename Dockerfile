@@ -4,12 +4,12 @@ FROM registry.fit2cloud.com/jumpserver/lina:${VERSION} as lina
 FROM registry.fit2cloud.com/jumpserver/luna:${VERSION} as luna
 FROM registry.fit2cloud.com/jumpserver/applets:${VERSION} as applets
 
-FROM nginx:1.24-bullseye
+FROM nginx:1.31.9-trixie
 ARG TARGETARCH
 
 ARG APT_MIRROR=http://mirrors.ustc.edu.cn
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=web \
-    sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list \
+    sed -i "s@http://.*.debian.org@${APT_MIRROR}@g" /etc/apt/sources.list.d/debian.sources \
     && rm -f /etc/cron.daily/apt-compat \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apt-get update \
