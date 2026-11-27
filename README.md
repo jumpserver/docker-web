@@ -84,3 +84,9 @@ Build a local copy of the offline asset image with `Dockerfile-static`.
 ```bash
 docker buildx build -f Dockerfile-static -t jumpserver/web-static:dev --load .
 ```
+
+## License
+
+Copyright (c) 2014-2026 FIT2CLOUD, All rights reserved.
+
+Licensed under the GNU General Public License version 3 (GPLv3), consistent with the [JumpServer main repository](https://github.com/jumpserver/jumpserver). See [LICENSE](LICENSE) for the full license text.
